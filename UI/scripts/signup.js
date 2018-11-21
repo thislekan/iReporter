@@ -52,5 +52,3 @@ signUpButton.addEventListener('click', () => {
   (password) ? sessionStorage.setItem('password', password) : '';
   if (email && password && name) return location.href = '../views/login.html';
 });
-
-// AIzaSyD7vyWaUCS6qMoPOcAhhO_TI1mbqAAWJlM
