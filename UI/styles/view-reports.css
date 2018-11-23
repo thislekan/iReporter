@@ -118,20 +118,22 @@ h4{
     display: none;
 }
 .content-wrapper{
-    overflow-x: scroll;
+    height: 30rem;
     margin: 1rem 0;
 }
 .image-container{
-    min-width: 110rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-gap: 1rem;
 }
 .image-container img{
-    height: 20rem;
-    width: 20rem;
+    height: 14.5rem;
+    width: 100%;
     object-fit: cover;
     object-position: center;
+    border: 1px solid rgba(29, 57, 74, 0.35);
+    border-radius: .25rem;
 }
 .btn-div select{
     height: 3rem;
@@ -165,26 +167,25 @@ h4{
     margin: 0 1rem;
     display: flex;
     align-items: center;
-    padding: 0 1rem;
+    padding: 0 .5rem;
     justify-content: center;
 }
 .navigation__wrapper a{
     text-decoration: none;
+    color: #117d5a;
+}
+.fa{
+    margin-left: 1rem;
+}
+.fa-flag{
+    color: #cf4241;
 }
 @media only screen and (min-device-width: 700px){
     .content-wrapper{
-        position: relative;
-        height: 11rem;
-    }
-    .image-container{
-        position: absolute;
-        top: 0;
-        left: 0;
-        min-width: 60rem;
+        height: 25rem;
     }
     .image-container img{
-        height: 11rem;
-        width: 11rem;
+        height: 12rem;
     }
     .map-region{
         height: 11rem;
@@ -194,11 +195,14 @@ h4{
         grid-template-columns: 1fr 1fr;
         grid-gap: 1rem;
     }
-    /* .select-report{
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    } */
+    .map-region{
+        height: 11rem;
+    }
+    .list-of-reports{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 1rem;
+    }
     .select-report select{
         width: 40rem;
     }
@@ -206,5 +210,11 @@ h4{
 @media only screen and (min-device-width: 900px){
     .padded-body{
         padding: 5rem 15rem;
+    }
+    .content-wrapper{
+        height: 45rem;
+    }
+    .image-container img{
+        height: 22rem;
     }
 }

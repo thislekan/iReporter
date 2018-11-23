@@ -22,6 +22,8 @@ function verifyRequiredFields() {
   if (!email || !password) {
     notificationTextElement.innerText = 'All fields are required. Please fill them all.'
     displayNotification();
+  } else if (email === 'admin' && password === 'admin') {
+    return { email, password };
   } else {
     if (password.length <= 5) {
       notificationTextElement.innerText = 'Password needs to be at least 6 characters long.'
@@ -41,6 +43,11 @@ loginButton.addEventListener('click', () => {
   const { email = '', password = '' } = verifyRequiredFields();
   if (email === emailInMemory || password === passwordInMemory) {
     return location.href = '../views/user/user-dashboard.html';
+  } else if (email === 'admin' && password === 'admin') {
+    return location.href = '../views/admin/admin-dashboard.html';
+    // setTimeout(() => {
+    //   location.href = '../views/admin/admin-dashboard.html';
+    // }, 1000);
   } else {
     displayNotification();
     notificationTextElement.innerText = 'User not found. Please sign up.'
