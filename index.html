@@ -5,12 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title> iReporter </title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" href="UI/styles/index.css">
 </head>
 
 <body>
-    <a href="UI/views/signup.html">signup</a>
-    <a href="UI/views/login.html">login</a>
-    <a href=""></a>
+    <header>
+        <nav>
+            <div class="navigation__wrapper">
+                <!-- <div><a href="#description">About us</a></div>
+                <div><a href="#process">How it works</a></div>
+                <div><a href="#stories">Accomplishments</a></div> -->
+                <div><a href="UI/views/login.html">Log In</a></div>
+            </div>
+        </nav>
+    </header>
+    <section id="welcome">
+        <div class="padded-body">
+            <div class="welcome-text">
+                <h1>
+                    You too can help
+                    <span><span id="end-text">end</span> corruption.</span>
+                    <!-- <span>It's super easy.</span> -->
+                </h1>
+                <button id="signup-btn">Sign Up</button>
+            </div>
+            <div class="welcome-invite">
+                <div class="welcome-invite__img img-div">
+                    <img src="UI/images/phone-1682317_1280.png" alt="transparent phone" class="parent-img">
+                    <img src="UI/images/shot.png" alt="report incident screenshot" class="child-img">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="description">
+        <div class="padded-body">
+            <div class="description-intro intro">
+                <h3>Lend the government your voice</h3>
+            </div>
+            <div class="description-body">
+                <div class="description-body__img img-div">
+                    <img src="UI/images/megaphone.jpg" alt="protester with megaphone">
+                </div>
+                <div class="description-body__text text-div">
+                    <p>With an internet connection, you too can help fight corruption. All you need to do is register
+                        with us and report incidents with their location, leaving the rest to us</p>
+                    <p>We make sure you remain anonymous while we investigate and you get real time notifications on
+                        your reorted incidents</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="process">
+        <div class="padded-body">
+            <div class="process-intro intro">
+                <h3>How it works.</h3>
+            </div>
+            <div class="process-body">
+                <div class="process-body__img img-div">
+                    <img src="UI/images/ryan-tang-281277-unsplash.jpg" alt="">
+                </div>
+                <div class="process-body__text text-div">
+                    <p class="sub-header">You too can fight corruption in 3 easy steps</p>
+                    <div>
+                        <p><span class="numbers">1.</span> Sign up and verify your email.</p>
+                        <p><span class="numbers">2.</span> Login after verification.</p>
+                        <p><span class="numbers">3.</span> Report an incident.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="stories">
+        <div class="padded-body">
+            <div class="stories-intro intro">
+                <h3>Our numbers have been good</h3>
+            </div>
+            <div class="stories-breakdown">
+                <div class="stories-breakdown__details">
+                    <div class="incident">
+                        <span class="incident-identifier">All inicdents</span>
+                        <span class="incident-stats all">1000</span>
+                    </div>
+                    <div class="incident">
+                        <span class="incident-identifier">Resolved incidents</span>
+                        <span class="incident-stats resolved">550</span>
+                    </div>
+                    <div class="incident">
+                        <span class="incident-identifier">Rejected incidents</span>
+                        <span class="incident-stats rejected">200</span>
+                    </div>
+                    <div class="incident">
+                        <span class="incident-identifier">Under Investigation</span>
+                        <span class="incident-stats investigating">250</span>
+                    </div>
+                </div>
+                <div class="stories-breakdown__text text-div">
+                    <p>We pride ourselves in the numbers of resolved incidents, but we aim for even better results. Our
+                        team of investigators are thorough and discreet in their approach.</p>
+                    <p>Every incident is treated as a priority. Our system and approach are void of bias, meaning we
+                        hold ourselves to a great standard. The numbers tell our stories for us.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- <div class="padded-body">
+        
+    </div> -->
+    <footer>
+        <div id="disclaimer">
+            <p>disclaimer
+
+                <span>iReporter is a non governmental organization committed to ending corruption in nigeria</span>
+            </p>
+        </div>
+        <div>
+            <p>contact us <a href="mailto:email@ireporter.net">email@ireporter.net</a></p>
+        </div>
+    </footer>
+    <script src="UI/scripts/index.js"></script>
 </body>
 
 </html>

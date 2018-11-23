@@ -42,11 +42,9 @@ function verifyRequiredFields() {
       return { name, email, password }
     }
   }
-  // console.log(name, email)
 }
 
 signUpButton.addEventListener('click', () => {
-  // console.log(nameInput);
   const { email = '', password = '', name = '' } = verifyRequiredFields();
   (email) ? sessionStorage.setItem('email', email) : '';
   (password) ? sessionStorage.setItem('password', password) : '';

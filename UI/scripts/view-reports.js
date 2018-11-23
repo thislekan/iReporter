@@ -42,11 +42,9 @@ sortIncidentByStatus.addEventListener('change', () => {
         default:
             break;
     }
-    // console.log(incidentIdentifier)
 });
 
 window.onload = () => {
-    // console.log('ready')
     hideAllDivs();
     divForEveryIncident.style.display = 'block';
 }

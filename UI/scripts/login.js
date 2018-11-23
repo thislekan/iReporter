@@ -34,7 +34,6 @@ function verifyRequiredFields() {
       return { email, password }
     }
   }
-  // console.log(name, email)
 }
 
 loginButton.addEventListener('click', () => {
