@@ -4,7 +4,13 @@
   "description": "An online tool to help fight corruption",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require babel-register",
+    "test:dev": "nyc mocha --require babel-register",
+    "start": "babel-watch server/server.js || true",
+    "build": "babel . --ignore node_modules,build --out-dir build",
+    "start:prod": "node build/server/server.js",
+    "heroku-postbuild": "npm run build",
+    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -19,6 +25,7 @@
   "dependencies": {
     "babel-cli": "^6.26.0",
     "express": "^4.16.4",
+    "morgan": "^1.9.1",
     "validator": "^10.9.0"
   },
   "devDependencies": {
@@ -32,7 +39,7 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "mocha": "^5.2.0",
-    "morgan": "^1.9.1",
+    "mocha-logger": "^1.0.6",
     "nyc": "^13.1.0",
     "supertest": "^3.3.0"
   }
