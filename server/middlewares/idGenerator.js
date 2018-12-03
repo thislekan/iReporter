@@ -1,4 +1,3 @@
-
 const idGenerator = () => {
   let text = '';
   const possible = '0123456789';
