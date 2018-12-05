@@ -6,6 +6,8 @@ const divForUnderInvestigationIncidents = document.getElementById('under-investi
 
 const incidentIdentifier = document.getElementById('incident-title');
 const sortIncidentByStatus = document.getElementById('sort-report');
+const logoutButton = document.getElementById('log-out');
+
 
 function hideAllDivs() {
     divForEveryIncident.style.display = 'none';
@@ -43,6 +45,8 @@ sortIncidentByStatus.addEventListener('change', () => {
             break;
     }
 });
+
+logoutButton.addEventListener('click', () => location.href = '../../../index.html');
 
 window.onload = () => {
     hideAllDivs();
