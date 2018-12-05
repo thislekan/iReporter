@@ -1,6 +1,7 @@
 const reportTypeSelection = document.getElementById('report-type');
 const interventionsContainer = document.getElementById('intervention-div');
 const redFlagsContainer = document.getElementById('red-flag-div');
+const logoutButton = document.getElementById('log-out');
 
 reportTypeSelection.addEventListener('change', () => {
     const selectedReport = reportTypeSelection.value;
@@ -15,4 +16,6 @@ reportTypeSelection.addEventListener('change', () => {
         default:
             break;
     }
-})
+});
+
+logoutButton.addEventListener('click', () => location.href = '../../../index.html');
