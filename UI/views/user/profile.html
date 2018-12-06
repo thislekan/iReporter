@@ -1,0 +1,140 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> iReporter || Profile</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../styles/profile.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="navigation__wrapper">
+                <div><a href="user-dashboard.html">Dashboard</a></div>
+                <div><a href="view-reports.html">View Reports</a></div>
+                <div><button id="log-out">Log Out</button></div>
+            </div>
+        </nav>
+    </header>
+    <div id="body">
+        <div class="padded-body">
+            <div class="notification">
+                <div class="close-notification">
+                    <span>x</span>
+                </div>
+                <p></p>
+            </div>
+            <div class="body__content">
+                <div class="user-details">
+                    <div class="image-div">
+                        <img src="../../images/quiet.jpg" alt="user image">
+                        <div class="settings">
+                            <span class="fa fa-cog"></span>
+                        </div>
+                        <div class="name-div">
+                            <p>User Fullname</p>
+                            <p>Location</p>
+                        </div>
+                    </div>
+                    <div class="text-div">
+                        <div class="details">
+                            <p>Name: </p>
+                            <p>User Fullname</p>
+                        </div>
+                        <div class="details">
+                            <p>Email: </p>
+                            <p>User Fullname</p>
+                        </div>
+                        <div class="details">
+                            <p>Phone: </p>
+                            <p>User Fullname</p>
+                        </div>
+                        <div class="details">
+                            <p>Address: </p>
+                            <p>User Fullname</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-summary">
+                    <div class="select-report-div">
+                        <label for="select report">Select report type here</label>
+                        <select name="select report" id="report-type">
+                            <!-- <option value="">C</option> -->
+                            <option value="red-flag">Red Flag</option>
+                            <option value="intervention">Intervention</option>
+                        </select>
+                    </div>
+                    <div id="red-flag-div">
+                        <div class="report-wrapper">
+                            <div class="title-div">
+                                <h2>Red flag</h2>
+                            </div>
+                            <div class="break-down">
+                                <div class="break-down-wrapper">
+                                    <div class="breakdown-details">
+                                        <p>Created: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Resolved: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Rejected: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Under Investigation: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Pending: </p>
+                                        <p>0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="intervention-div">
+                        <div class="report-wrapper">
+                            <div class="title-div">
+                                <h2>Intervention</h2>
+                            </div>
+                            <div class="break-down">
+                                <div class="break-down-wrapper">
+                                    <div class="breakdown-details">
+                                        <p>Created: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Resolved: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Rejected: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Under Investigation: </p>
+                                        <p>0</p>
+                                    </div>
+                                    <div class="breakdown-details">
+                                        <p>Pending: </p>
+                                        <p>0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../scripts/profile.js"></script>
+</body>
+
+</html>
