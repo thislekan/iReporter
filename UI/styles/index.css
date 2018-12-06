@@ -79,6 +79,19 @@ section{
     height: 100vh;
     text-align: center;
 }
+#description{
+    height: 115vh;
+}
+#process{
+    height: 130vh;
+}
+.description-body__text{
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
 /* #description{
     text-align: center;
 } */

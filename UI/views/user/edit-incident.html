@@ -15,7 +15,6 @@
     <nav>
       <div class="navigation__wrapper">
         <div><a href="user-dashboard.html">Dashboard</a></div>
-        <div><a href="profile.html">Profile</a></div>
         <div><a href="view-reports.html">View Reports</a></div>
         <div><button id="log-out">Log Out</button></div>
       </div>
@@ -34,7 +33,7 @@
       <div id="body__content">
         <div class="create-and-edit">
           <div class="edit">
-            <h2>Edit or Delete an incident</h2>
+            <h2>Edit an incident</h2>
             <div class="edit__body">
               <div class="edit__body__wrapper">
                 <div class="report-details">
@@ -47,17 +46,25 @@
                 </div>
                 <div class="report-details">
                   <h4>Status: </h4>
-                  <p>Pending</p>
+                  <p>Draft</p>
                 </div>
                 <div class="location-div">
                   <div class="report-details">
                     <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
+                    <input type="text" name="" id="address-input" value="43 Okorogbo road, Idi-ape Illorin" disabled>
+                  </div>
+                  <div class="display-btn-div">
+                    <button class="view-map-btn view-btns">View Map</button>
+                    <button class="view-images-btn view-btns">View Images</button>
+                    <button class="view-comments-btn view-btns">View Comments</button>
+                    <button class="view-videos-btn view-btns">View Videos</button>
                   </div>
                   <div class="map">
-                    <button>View Map</button>
                     <div class="map-region">map region</div>
                   </div>
+                </div>
+                <div class="comment-div" id="comment-div">
+                  <textarea name="" id="" disabled></textarea>
                 </div>
                 <div class="image-and-video-div">
                   <h4>Images or Videos: </h4>
@@ -70,61 +77,18 @@
                     </div>
                   </div>
                 </div>
-                <div class="btn-div btn-select">
-                  <button id="edit-btn" class="action-btns">Edit Incident</button>
-                  <button id="delete-btn" class="action-btns">Delete Incident</button>
+                <div class="edit-btn-div">
+                  <button class="edit-btn edit-comment" id="edit-comment-btn">Edit Incident</button>
+                  <button class="edit-btn edit-location" id="edit-location-btn">Edit Location</button>
                 </div>
               </div>
             </div>
           </div>
-          <!-- <div class="edit">
-            <h2>Edit or Delete an incident</h2>
-            <div class="edit__body">
-              <div class="edit__body__wrapper">
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p>09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Red Flag <span class="fa fa-flag"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="map">
-                    <button>View Map</button>
-                    <div class="map-region">map region</div>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="btn-div btn-select">
-                  <button id="edit-btn" class="action-btns">Edit Incident</button>
-                  <button id="delete-btn" class="action-btns">Delete Incident</button>
-                </div>
-              </div>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
   </div>
+  <script src="../../scripts/user-edit-incident.js"></script>
 </body>
 
 </html>

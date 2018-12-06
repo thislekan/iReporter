@@ -3,6 +3,8 @@ const divForPendingIncidents = document.getElementById('pending-reports');
 const divForResolvedIncidents = document.getElementById('resolved-reports');
 const divForRejectedIncidents = document.getElementById('rejected-reports');
 const divForUnderInvestigationIncidents = document.getElementById('under-investigation-reports');
+const divForRedFlagIncidents = document.getElementById('red-flag-reports');
+const divForInterventionIncidents = document.getElementById('intervention-reports');
 
 const incidentIdentifier = document.getElementById('incident-title');
 const sortIncidentByStatus = document.getElementById('sort-report');
@@ -15,6 +17,8 @@ function hideAllDivs() {
     divForRejectedIncidents.style.display = 'none';
     divForResolvedIncidents.style.display = 'none';
     divForUnderInvestigationIncidents.style.display = 'none';
+    divForInterventionIncidents.style.display = 'none';
+    divForRedFlagIncidents.style.display = 'none';
 }
 
 
@@ -40,6 +44,16 @@ sortIncidentByStatus.addEventListener('change', () => {
         case 'under-investigation':
             incidentIdentifier.innerText = 'All incidents under investigation';
             divForUnderInvestigationIncidents.style.display = 'block';
+            break;
+        case 'red-flag':
+            console.log('upj')
+            incidentIdentifier.innerText = 'All reported Red flag incidents';
+            divForRedFlagIncidents.style.display = 'block';
+            break;
+        case 'intervention':
+            console.log('hdgh')
+            incidentIdentifier.innerText = 'All reported Intervention incidents';
+            divForInterventionIncidents.style.display = 'block';
             break;
         default:
             break;
