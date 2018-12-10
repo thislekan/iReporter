@@ -55,6 +55,7 @@ const createIncidentTable = () => {
     id UUID PRIMARY KEY NOT NULL,
     createdBy UUID NOT NULL,
     createdOn BIGINT NOT NULL,
+    creator TEXT,
     updatedOn BIGINT,
     type TEXT NOT NULL,
     location VARCHAR(100) NOT NULL,
