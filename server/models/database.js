@@ -1,8 +1,11 @@
 /* eslint-disable no-console */
 // import pg from 'pg';
 const pg = require('pg');
+const dotEnv = require('../config/config');
 
-const connectionString = process.env.DATABASE_URL || 'postgres://thislekan:123phoe5@localhost:5432/ireporter';
+process.env.NODE_ENV = dotEnv.NODE_ENV;
+
+const connectionString = dotEnv.DATABASE_URL;
 
 const client = new pg.Client(connectionString);
 
@@ -57,6 +60,7 @@ const createIncidentTable = () => {
     createdOn BIGINT NOT NULL,
     creator TEXT,
     updatedOn BIGINT,
+    title VARCHAR(75) NOT NULL,
     type TEXT NOT NULL,
     location VARCHAR(100) NOT NULL,
     status TEXT DEFAULT 'draft',

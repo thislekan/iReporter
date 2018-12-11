@@ -4,3 +4,4 @@ package-lock.json
 config/config.js
 .nyc_output
 .coveralls.yml
+.env

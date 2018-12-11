@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 import express from 'express';
 import morgan from 'morgan';
+import 'babel-polyfill';
 import routes from './routes/routes';
+import dbRoutes from './routes/routesWithDb';
 
 const app = express();
 app.use(morgan('dev'));
@@ -15,5 +17,6 @@ app.get('/', (req, res) => {
 });
 
 app.use(routes);
+app.use(dbRoutes);
 
 export default app;
