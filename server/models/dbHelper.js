@@ -2,7 +2,7 @@
 import pg from 'pg';
 import dotEnv from '../config/config';
 
-const connectionString = dotEnv.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL || dotEnv.DATABASE_URL;
 
 const client = new pg.Pool({ connectionString });
 client.connect(() => console.log('welcome to db'));

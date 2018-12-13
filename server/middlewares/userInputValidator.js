@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import validator from 'validator';
 import userMiddleware from './userMiddleware';
 
 function errorMessage(res, statusCode, message) {
@@ -22,7 +21,7 @@ function checkPasswordIfString(res, password) {
 
 function checkEmailValidity(res, email) {
   let emailNotValidError;
-  if (!validator.isEmail(email)) {
+  if (!/^.+@.+\..+$/.test(email)) {
     const message = 'The email is invalid';
     emailNotValidError = errorMessage(res, 400, message);
   }
@@ -37,17 +36,6 @@ function checkPasswordCount(res, password) {
   }
   return paswwordCountError;
 }
-
-// function checkUserInputsIfValid(res, value) {
-//   let response;
-//   if (!value) {
-//     response = res.status(400).send({
-//       status: 400,
-//       error: 'Update user not successful. Required fields are empty',
-//     });
-//   }
-//   return response;
-// }
 
 function checkUpdateInputsIfString(res, statusCode, message, value) {
   let response;

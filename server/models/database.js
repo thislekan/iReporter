@@ -4,20 +4,13 @@ const uuid = require('uuid/v4');
 const bcrypt = require('bcrypt');
 const password = require('../config/password');
 
-console.log(password);
-
-// process.env.NODE_ENV = dotEnv.NODE_ENV;
-process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 const connectionString = process.env.DATABASE_URL || `postgres://thislekan:${password}@localhost:5432/ireporter`;
-// const connectionString = process.env.DATABASE_URL;
 
 const client = new pg.Pool({ connectionString });
-
 client.connect(() => console.log('connected to db'));
-// client.on('error', err => console.log(err));
 
 const createUserTable = () => {
-  console.log('create table');
   const queryTextforUsers = `CREATE TABLE IF NOT EXISTS
   users(
     id UUID PRIMARY KEY NOT NULL,
@@ -33,12 +26,10 @@ const createUserTable = () => {
   )`;
 
   client.query(queryTextforUsers)
-    .then((res) => {
-      console.log(res);
+    .then(() => {
       client.end();
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       client.end();
     });
 };
@@ -57,12 +48,10 @@ const createAdmin = () => {
     true,
   ];
   client.query(text, values)
-    .then((res) => {
-      console.log(res);
+    .then(() => {
       client.end();
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       client.end();
     });
 };
@@ -71,12 +60,10 @@ const dropUserTable = () => {
   const queryText = 'DROP TABLE IF EXISTS Users';
 
   client.query(queryText)
-    .then((res) => {
-      console.log(res);
+    .then(() => {
       client.end();
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       client.end();
     });
 };
@@ -100,12 +87,10 @@ const createIncidentTable = () => {
   )`;
 
   client.query(queryTextforIncidents)
-    .then((res) => {
-      console.log(res);
+    .then(() => {
       client.end();
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       client.end();
     });
 };
@@ -114,12 +99,10 @@ const dropIncidentTable = () => {
   const queryText = 'DROP TABLE IF EXISTS Incidents';
 
   client.query(queryText)
-    .then((res) => {
-      console.log(res);
+    .then(() => {
       client.end();
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       client.end();
     });
 };

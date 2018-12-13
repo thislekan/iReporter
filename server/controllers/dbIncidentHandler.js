@@ -219,7 +219,7 @@ export default {
     WHERE id=$1 AND status='draft' AND createdBy=$2 AND type=$3
     returning *
     `;
-    const values = [id, userid, type];
+    const values = [id, userid, type.trim()];
     try {
       const { rows } = await dbHelper.query(text, values);
       return responseMessage(res, 200, rows[0], 'data');

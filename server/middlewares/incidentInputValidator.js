@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import validator from 'validator';
 import userMiddleware from './userMiddleware';
 import dbHelper from '../models/dbHelper';
 
@@ -28,28 +27,39 @@ function responseMessage(res, statusCode, message) {
   });
 }
 
+function checkForTrim(value, res, statusCode, message) {
+  if (!value.trim) return responseMessage(res, statusCode, message);
+  return value;
+}
+
+function typeOfCheck(value, res, statusCode, message) {
+  if (typeof (value) !== 'string') {
+    return responseMessage(res, statusCode, message);
+  }
+  return value;
+}
+
 export default {
   createIncidentQueryValidator: (req, res, next) => {
     const {
-      type,
-      status = 'draft',
-      location,
+      type, status = 'draft', location, title, comment,
     } = req.body;
 
 
-    if (!type || !location) {
+    if (!type && !location && !title && !comment) {
       return responseMessage(res, 400, 'One or two required fields missing.');
     }
+    const inputValues = [type, location, title, comment];
+    inputValues.forEach(element => checkForTrim(element, res, 400, 'One or more required fields are empty'));
+
+    inputValues.forEach(element => typeOfCheck(element, res, 400, 'One or more fields contain an unsupported format'));
+
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, 'The incident type selected is not recogized. Please choose either a red-flag or intervention');
     }
     if (status !== 'draft') {
-      return res.status(403).send({
-        status: 403,
-        error: 'You can\'t create an incident with your selected status.',
-      });
+      return responseMessage(res, 400, 'You can\'t create an incident with your selected status.');
     }
-
     return next();
   },
 
@@ -67,6 +77,8 @@ export default {
     if (!type) {
       return responseMessage(res, 400, 'The incident type is not included.');
     }
+    checkForTrim(type, res, 400, 'One or more required fields empty');
+    typeOfCheck(type, res, 400, 'One or more fields contain an unsupported type');
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, 'The incident type is not recognized');
     }
@@ -102,6 +114,8 @@ export default {
       return responseMessage(res, 400, 'You can not post an empty comment');
     }
 
+    typeOfCheck(comment, res, 400, 'One or more fields contain an unsupported type');
+
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
 
@@ -126,12 +140,10 @@ export default {
 
     confirmUserId(res, userid);
 
-    if (!comment) {
-      return responseMessage(res, 400, 'One or more required fields missing');
-    }
-    if (!comment.trim()) {
-      return responseMessage(res, 400, 'You can not post an empty comment');
-    }
+    if (!comment) return responseMessage(res, 400, 'One or more required fields missing');
+    if (!comment.trim()) return responseMessage(res, 400, 'You can not post an empty comment');
+    typeOfCheck(comment, res, 400, 'One or more fields contain an unsupported type');
+
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
@@ -163,6 +175,7 @@ export default {
     if (!location.trim()) {
       return responseMessage(res, 400, 'You can not post an empty comment');
     }
+    typeOfCheck(location, res, 400, 'One or more fields contain an unsupported type');
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
@@ -194,6 +207,7 @@ export default {
     if (!location.trim()) {
       return responseMessage(res, 400, 'You can not post an empty comment');
     }
+    typeOfCheck(location, res, 400, 'One or more required fields contains unsuppported format');
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
@@ -215,12 +229,11 @@ export default {
   updateIncidentStatusInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { status, id } = req.body;
-    if (!status || !id) {
+    if (!status && !id) {
       return responseMessage(res, 400, 'One or more required field missing');
     }
-    if (validator.isEmpty(status, { ignore_whitespace: true })) {
-      return responseMessage(res, 400, 'white spaces are not allowed.');
-    }
+    checkForTrim(status, res, 400, 'One or more required fields are empty');
+    typeOfCheck(status, res, 400, 'One or more required fields format is unsupported');
     const user = await userMiddleware.findUser(userid);
     if (user && !user.status) {
       if (!user.isadmin) {
@@ -237,11 +250,12 @@ export default {
   deleteIncidentQueryValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { id, type } = req.body;
+    if (!type && !id) return responseMessage(res, 400, 'One or more required fields empty');
+    if (!type.trim()) return responseMessage(res, 400, 'One or more required fields empty');
 
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, `No ${type} record found`);
     }
-
     confirmUserId(res, userid);
 
     const user = await userMiddleware.findUser(userid);
