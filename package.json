@@ -8,7 +8,8 @@
     "test:dev": "nyc mocha --require babel-register",
     "start": "babel-watch server/server.js || true",
     "build": "babel . --ignore node_modules,build --out-dir build",
-    "start:prod": "node build/server/server.js",
+    "start:prod": "babel-node server/server.js",
+    "start-build:prod": "node build/server/server.js",
     "heroku-postbuild": "npm run build",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
   },
