@@ -1,4 +1,3 @@
-import validator from 'validator';
 import store from '../db/store';
 import idGenerator from '../middlewares/idGenerator';
 
@@ -38,7 +37,7 @@ export default {
       phoneNumber,
       isAdmin,
     } = req.body;
-    if (!validator.isEmail(email)) {
+    if (!/^.+@.+\..+$/.test(email)) {
       return res.status(400).send({
         status: 400,
         error: 'Email invalid. Please signup with a valid email',
