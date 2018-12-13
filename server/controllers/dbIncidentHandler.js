@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import uuid from 'uuid/v4';
-import dbMiddleware from '../models/dbMiddleware';
+import dbHelper from '../models/dbHelper';
 // import userMiddleware from '../middlewares/userMiddleware';
 
 // const findIncidentQuery = 'SELECT * FROM incidents WHERE id = $1';
@@ -16,19 +16,22 @@ function rowCountCheck(res, rowCount) {
   return response;
 }
 
+function responseMessage(res, statusCode, message, type) {
+  return res.status(statusCode).send({
+    status: statusCode,
+    [type]: message,
+  });
+}
+
 export default {
   /**
    * nothong to show here.
    */
 
   createIncident: async (req, res) => {
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const {
-      type,
-      location,
-      comment,
-      title,
-      status = 'draft',
+      type, location, comment, title, status = 'draft',
     } = req.body;
     const text = `INSERT INTO
     incidents(id, createdBy, createdOn, type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
@@ -37,107 +40,87 @@ export default {
     const values = [uuid(), userid, new Date().getTime(), type, location, status, comment, title];
 
     try {
-      const { rows } = await dbMiddleware.query(text, values);
-      console.log(rows);
-      return res.status(201).send({
-        status: 201,
-        data: rows[0],
-      });
+      const { rows } = await dbHelper.query(text, values);
+      return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
+
+
   getAllIncidents: async (req, res) => {
     const textQueryForAllIncidents = 'SELECT * FROM incidents';
 
     try {
-      const { rows, rowCount } = await dbMiddleware.query(textQueryForAllIncidents);
+      const { rows, rowCount } = await dbHelper.query(textQueryForAllIncidents);
       if (!rows.length) {
-        return res.status(404).send({
-          status: 404,
-          error: 'Sorry. There are no records on our database yet.',
-        });
+        return responseMessage(
+          res, 404, 'Sorry. There are no records on our database yet.', 'error',
+        );
       }
-      return res.status(200).send({
-        status: 200,
-        data: { rows, rowCount },
-      });
+      return responseMessage(res, 200, { rows, rowCount }, 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
+
+
   getAllUserIncidents: async (req, res) => {
-    console.log(req, res);
+    const { userid } = res.locals;
+    const text = 'SELECT * FROM incidents WHERE createdby = $1';
+
+    try {
+      const { rows, rowCount } = await dbHelper.query(text, [userid]);
+      rowCountCheck(res, rowCount);
+      return responseMessage(res, 200, rows, 'data');
+    } catch (error) {
+      return responseMessage(res, 400, error, 'error');
+    }
   },
+
+
   getIncidentsByType: async (req, res) => {
     const { type } = req.params;
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const queryText = 'SELECT * FROM incidents WHERE type = $1 AND createdBy = $2';
     const redFlagValue = [(type === 'red-flag') ? 'red-flag' : '', userid];
     const interventionValue = [(type === 'intervention') ? 'intervention' : '', userid];
 
     try {
       if (type === 'red-flag') {
-        const { rows, rowCount } = await dbMiddleware.query(queryText, redFlagValue);
+        const { rows, rowCount } = await dbHelper.query(queryText, redFlagValue);
         rowCountCheck(res, rowCount);
-        return res.status(200).send({
-          status: 200,
-          data: { [type]: rows, rowCount },
-        });
+        return responseMessage(res, 200, { [type]: rows, rowCount }, 'data');
       }
-      const { rows, rowCount } = await dbMiddleware.query(
+      const { rows, rowCount } = await dbHelper.query(
         queryText, interventionValue,
       );
       rowCountCheck(res, rowCount);
-      // const inicdents = rows[0];
-      return res.status(200).send({
-        status: 200,
-        data: { [type]: rows[0], rowCount },
-      });
+      return responseMessage(res, 200, { [type]: rows[0], rowCount }, 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
   getSingleIncident: async (req, res) => {
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const { id } = req.params;
     const text = 'SELECT * FROM incidents where id = $1 AND createdBy = $2';
     const values = [id, userid];
 
     try {
-      const { rows, rowCount } = await dbMiddleware.query(text, values);
+      const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) {
-        return res.status(404).send({
-          status: 404,
-          error: 'The record you requested for does not exist',
-        });
+        return responseMessage(
+          res, 404, 'The record you requested for does not exist', 'error',
+        );
       }
-      return res.status(200).send({
-        status: 200,
-        data: rows[0],
-      });
+      return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(404).send({
-        status: 400,
-        error: 'No record of the incident you requested exist.',
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
   editRedFlagComment: async (req, res) => {
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const { id } = req.params;
     const { comment } = req.body;
     const text = `
@@ -149,25 +132,18 @@ export default {
       const values = [
         id,
         userid,
-        comment,
+        comment.trim(),
         new Date().getTime(),
       ];
-      const { rows, rowCount } = await dbMiddleware.query(text, values);
+      const { rows, rowCount } = await dbHelper.query(text, values);
       rowCountCheck(res, rowCount);
-      return res.status(201).send({
-        status: 201,
-        data: rows[0],
-      });
+      return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
   editInterventionComment: async (req, res) => {
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const { id } = req.params;
     const { comment } = req.body;
     const text = `
@@ -179,25 +155,18 @@ export default {
       const values = [
         id,
         userid,
-        comment,
+        comment.trim(),
         new Date().getTime(),
       ];
-      const { rows, rowCount } = await dbMiddleware.query(text, values);
+      const { rows, rowCount } = await dbHelper.query(text, values);
       rowCountCheck(res, rowCount);
-      return res.status(201).send({
-        status: 201,
-        data: rows[0],
-      });
+      return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
   editRedFlagLocation: async (req, res) => {
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const { id } = req.params;
     const { location } = req.body;
     const text = `
@@ -209,25 +178,18 @@ export default {
       const values = [
         id,
         userid,
-        location,
+        location.trim(),
         new Date().getTime(),
       ];
-      const { rows, rowCount } = await dbMiddleware.query(text, values);
+      const { rows, rowCount } = await dbHelper.query(text, values);
       rowCountCheck(res, rowCount);
-      return res.status(201).send({
-        status: 201,
-        data: rows[0],
-      });
+      return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
   editInterventionLocation: async (req, res) => {
-    const { userid } = req.headers;
+    const { userid } = res.locals;
     const { id } = req.params;
     const { location } = req.body;
     const text = `
@@ -239,26 +201,19 @@ export default {
       const values = [
         id,
         userid,
-        location,
+        location.trim(),
         new Date().getTime(),
       ];
-      const { rows, rowCount } = await dbMiddleware.query(text, values);
+      const { rows, rowCount } = await dbHelper.query(text, values);
       rowCountCheck(res, rowCount);
-      return res.status(201).send({
-        status: 201,
-        data: rows[0],
-      });
+      return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
   },
   deleteIncident: async (req, res) => {
-    const { userid } = req.headers;
-    const { id, type } = req.params;
+    const { userid } = res.locals;
+    const { id, type } = req.body;
     const text = `
     DELETE FROM incidents 
     WHERE id=$1 AND status='draft' AND createdBy=$2 AND type=$3
@@ -266,17 +221,23 @@ export default {
     `;
     const values = [id, userid, type];
     try {
-      const { rows } = await dbMiddleware.query(text, values);
-      return res.status(200).send({
-        status: 200,
-        data: rows[0],
-      });
+      const { rows } = await dbHelper.query(text, values);
+      return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send({
-        status: 400,
-        error,
-      });
+      return responseMessage(res, 400, error, 'error');
     }
+  },
+  updateIncidentStatus: async (req, res) => {
+    // const { userid } = res.locals;
+    const { id, status } = req.body;
+
+    const text = `UPDATE incidents
+      SET status=$2
+      WHERE id=$1 returning *`;
+    const values = [id, status.trim()];
+
+    const { rows, rowCount } = await dbHelper.query(text, values);
+    rowCountCheck(rowCount);
+    return responseMessage(res, 201, rows[0], 'data');
   },
 };

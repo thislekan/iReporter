@@ -1,15 +1,20 @@
 /* eslint-disable no-console */
-// import pg from 'pg';
 const pg = require('pg');
-const dotEnv = require('../config/config');
+const uuid = require('uuid/v4');
+const bcrypt = require('bcrypt');
+const password = require('../config/password');
 
-process.env.NODE_ENV = dotEnv.NODE_ENV;
+console.log(password);
 
-const connectionString = dotEnv.DATABASE_URL;
+// process.env.NODE_ENV = dotEnv.NODE_ENV;
+process.env.NODE_ENV = 'development';
+const connectionString = process.env.DATABASE_URL || `postgres://thislekan:${password}@localhost:5432/ireporter`;
+// const connectionString = process.env.DATABASE_URL;
 
-const client = new pg.Client(connectionString);
+const client = new pg.Pool({ connectionString });
 
 client.connect(() => console.log('connected to db'));
+// client.on('error', err => console.log(err));
 
 const createUserTable = () => {
   console.log('create table');
@@ -28,6 +33,30 @@ const createUserTable = () => {
   )`;
 
   client.query(queryTextforUsers)
+    .then((res) => {
+      console.log(res);
+      client.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      client.end();
+    });
+};
+
+const createAdmin = () => {
+  const salt = bcrypt.genSaltSync(10);
+  const hashedpassword = bcrypt.hashSync('admin_super_user', salt);
+
+  const text = `INSERT INTO
+    Users(id, email, fullname, password, isAdmin) VALUES($1, $2, $3, $4, $5)`;
+  const values = [
+    uuid(),
+    'admin@email.com',
+    'Admin User',
+    hashedpassword,
+    true,
+  ];
+  client.query(text, values)
     .then((res) => {
       console.log(res);
       client.end();
@@ -94,15 +123,17 @@ const dropIncidentTable = () => {
       client.end();
     });
 };
+const insertAdminIntoTable = () => createAdmin();
 
 const createAllTables = () => {
   createUserTable();
   createIncidentTable();
+  // insertAdminIntoTable();
 };
 
 const dropAllTables = () => {
-  dropUserTable();
   dropIncidentTable();
+  dropUserTable();
 };
 
 // export default {
@@ -121,6 +152,8 @@ module.exports = {
   dropIncidentTable,
   createAllTables,
   dropAllTables,
+  insertAdminIntoTable,
 };
 
+// import 'make-runnable';
 require('make-runnable');

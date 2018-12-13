@@ -12,8 +12,10 @@ function errorMessage(res, statusCode, message) {
 function checkPasswordIfString(res, password) {
   let passwordNotSringError;
   if (typeof (password) !== 'string') {
-    const message = 'Password invalid. Your password needs to be a string.';
-    passwordNotSringError = errorMessage(res, 400, message);
+    passwordNotSringError = errorMessage(
+      res, 400,
+      'Password invalid. Your password needs to be a string.',
+    );
   }
   return passwordNotSringError;
 }
@@ -58,20 +60,12 @@ function checkUpdateInputsIfString(res, statusCode, message, value) {
   return response;
 }
 
+
 export default {
   validateCreateUserInput: async (req, res, next) => {
     const { email, password, fullname } = req.body;
-    if (!email) {
-      const message = `${(!email) ? 'You can not create an account without an email.' : ''}`;
-      return errorMessage(res, 400, message);
-    }
-    if (!password) {
-      const message = `${(!password) ? 'You can not create an account without a password' : ''}`;
-      return errorMessage(res, 400, message);
-    }
-    if (!fullname) {
-      const message = `${(!fullname) ? 'We need to know your name before creating your account.' : ''}`;
-      return errorMessage(res, 400, message);
+    if (!email || !password || !fullname) {
+      return errorMessage(res, 400, 'One or more required fields missing.');
     }
 
     checkEmailValidity(res, email);
@@ -79,7 +73,7 @@ export default {
     checkPasswordCount(res, password);
 
     const user = await userMiddleware.checkIfEmailExist(email);
-    if (!user.status) {
+    if (user && !user.status) {
       if (user.email) {
         const message = 'This email is already in use.';
         return errorMessage(res, 400, message);
@@ -88,15 +82,13 @@ export default {
     }
     return next();
   },
+
+
   validateLoginUserInput: async (req, res, next) => {
     const { email, password } = req.body;
 
-    if (!email) {
+    if (!email || !password) {
       return errorMessage(res, 400, 'Log in unsuccessful. Please provide email.');
-    }
-
-    if (!password) {
-      return errorMessage(res, 400, 'Log in unsuccessful. Please provide password.');
     }
 
     checkEmailValidity(res, email);
@@ -104,16 +96,16 @@ export default {
     checkPasswordCount(res, password);
 
     const user = await userMiddleware.checkIfEmailExist(email);
-    if (!user.email) {
-      if (user.status) {
-        const message = 'No records of this user exist on our database.';
-        return errorMessage(res, 404, message);
-      }
-      return user;
-    }
+    console.log(user);
+    res.locals.foundUser = user;
 
+    if (!user.email && user.status) {
+      return errorMessage(res, 404, 'No records of this user exist on our database.');
+    }
     return next();
   },
+
+
   validateUpdateUserInput: async (req, res, next) => {
     const { userid } = req.headers;
     const {
@@ -126,17 +118,11 @@ export default {
     } = req.body;
 
     if (!userid) {
-      return res.status(404).send({
-        error: 'User not found',
-        status: 404,
-      });
+      return errorMessage(res, 404, 'User not found');
     }
 
     if (!fullname && !lastname && !firstname && !othernames && !phoneNumber && !username) {
-      return res.status(400).send({
-        status: 400,
-        error: 'Update user not successful. Required fields are empty',
-      });
+      return errorMessage(res, 400, 'Can\'t update user with empty fields');
     }
 
     if (fullname) {
