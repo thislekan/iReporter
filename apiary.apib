@@ -1,0 +1,534 @@
+FORMAT: v2
+HOST: https://ireporter-endpoint.herokuapp.com
+
+# iReporter
+
+iReporter is a simple application built to tackle corruption in the country. It requires users to sign up and report whatever incident they wish to alert the authorities of. iRepoprter classify reports into two class or types:
+
+  + Red-flags
+  + Interventions
+
+#### Red-flags
+
+Red flags are incidents that requires the immediate attention of the authorities. As the name implies, it means that the reported incident is on a higher level of severity than the intervention types.
+
+#### Interventions
+
+Cases or incidents as this aren't as dire as the red-flags. It still does require immediate attention though. Interventions could be cases where the authorities are alerted to a rising case of corruption. One that is yet to be an epidemic.
+
+## Endpoints
+
+# Group Users
+
+Resources related to creating users in the API.
+
+## User Creation [/api/v2/user/create]
+
+### Create A User [POST]
+
+A user can be created from this endpoint. The parameters needed are the user's fullname, the user's email and the user's password. A UUID is auto generated and the password is hashed before being stored on the DB. If successful, it returns a JSON Object of the user's information excluding the password. A JSON web token is also generated for the user.
+
+  + email (string) - The email
+  + password (string) - The password
+  + fullname (string) - The full name
+
+  + Request (application/json)
+
+        {
+          "email": "newuser@email.com",
+          "password": "The new password will do",
+          "fullname": "Somebody Johnson"
+        }
+  
+  + Response 201 (application/json)
+  
+    + Headers
+
+            x-auth: jsonwebtoken
+
+    + Body
+
+            {
+              "status": 200,
+              "data": {
+                  "id": "58ef95b8-a6d2-49d3-a8fc-43202c9fd374",
+                  "email": "admin@email.com",
+                  "fullname": "Admin User",
+                  "lastname": null,
+                  "firstname": null,
+                  "othernames": null,
+                  "isadmin": true,
+                  "phonenumber": null,
+                  "username": null
+              }
+            }
+
+## Log In User [/api/v2/user/login]
+
+### Log In A User [POST]
+
+A user provides their email and password in a JSON Object and the password is being compared with the hashed version on the DB to confirm they're truly registered.
+
+      + email (string) - The user email
+      + password (string) - The user's password
+
+  + Request (application/json)
+
+    + Body
+    
+            {
+              "email": "user@email.com",
+              "password": "pasword"
+            }
+  
+  + Response 200 (application/json)
+
+    + Headers
+
+            x-auth: jsonwebtoken
+
+    + Body
+
+            {
+              "status": 200,
+              "data": {
+                  "id": "58ef95b8-a6d2-49d3-a8fc-43202c9fd374",
+                  "email": "admin@email.com",
+                  "fullname": "Admin User",
+                  "lastname": null,
+                  "firstname": null,
+                  "othernames": null,
+                  "isadmin": true,
+                  "phonenumber": null,
+                  "username": null
+              }
+            }
+
+
+# Group Incidents
+
+Resources related to creating incidents in the API.
+
+## Incident Creation [/api/v2/incident/create]
+
+### Create An Incident [POST]
+
+An incident can be created from this endpoint. The parameters needed are the title, the comment, the location where the incident happened and the type of incident you want created. A UUID is auto generated for the incident. If successful, it returns a JSON Object of the incident's information. 
+
+The endpoint is a single endpoint that creates either a red-flag or an intervention. The incidents canonly be a red-flag or intervention. Take note of the hyphen in red-flag. The location can either be a string or a geolocation saved as string
+
+  + title (string) - The incident title
+  + comment (string) - The user's comment
+  + location (string) - The address where the incident happened
+  + type (string) - The type of incident you wish to create
+
+  + Request (application/json) 
+  
+    + Headers
+
+            x-auth: jsonwebtoken
+
+    + Body
+
+            {
+              "title": "The title to be filled",
+              "comment": "comment can not be null",
+              "location": "location can an address string or coordinates",
+              "type": "red-flag"
+            }
+  
+  + Response 201 (application/json)
+
+    + Body
+
+            {
+              "status": 201,
+              "data": {
+                  "id": "398e1833-3287-4e28-83e1-756f3ab1be04",
+                  "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                  "createdon": "1544666316028",
+                  "creator": null,
+                  "updatedon": null,
+                  "title": "New incident",
+                  "type": "red-flag",
+                  "location": "somolu, lagos",
+                  "status": "draft",
+                  "comment": "Documentation ",
+                  "images": null,
+                  "videos": null
+              }
+            }
+
+## Retrieve Incident [/api/v2/incidents]
+
+### Retrieve All Created Incidents [GET]
+
+    + Request (application/json)
+
+        + Headers
+
+            x-auth: jsonwebtoken
+  
+    + Response 200 (application/json)
+
+        + Body
+
+            {
+                "status": 200,
+                "data": [
+                    {
+                        "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544625818082",
+                        "creator": null,
+                        "updatedon": "1544641763810",
+                        "title": "Hash exposed",
+                        "type": "red-flag",
+                        "location": "0.9989 95.6789",
+                        "status": "draft",
+                        "comment": "No white spaces in comment",
+                        "images": null,
+                        "videos": null
+                    },
+                    {
+                        "id": "91bf99f3-e051-43ad-a23c-2ed54b08b00b",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544627482467",
+                        "creator": null,
+                        "updatedon": "1544644289437",
+                        "title": "Hash exposed",
+                        "type": "intervention",
+                        "location": "6.5467 8.5432",
+                        "status": "resolved",
+                        "comment": "The government needs to act fast",
+                        "images": null,
+                        "videos": null
+                    },
+                    {
+                        "id": "398e1833-3287-4e28-83e1-756f3ab1be04",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544666316028",
+                        "creator": null,
+                        "updatedon": null,
+                        "title": "New incident",
+                        "type": "red-flag",
+                        "location": "somolu, lagos",
+                        "status": "draft",
+                        "comment": "Documentation ",
+                        "images": null,
+                        "videos": null
+                    }
+                ]
+            }
+
+
+## Retrieve Incident [/api/v2/user/incidents]
+
+### Retrieve All Incident Created By A User [GET]
+
+    + Request (application/json) 
+  
+        + Headers
+
+                x-auth: jsonwebtoken
+            
+  
+  + Response 200 (application/json)
+
+    + Body
+
+            {
+                "status": 200,
+                "data": [
+                    {
+                        "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544625818082",
+                        "creator": null,
+                        "updatedon": "1544641763810",
+                        "title": "Hash exposed",
+                        "type": "red-flag",
+                        "location": "0.9989 95.6789",
+                        "status": "draft",
+                        "comment": "No white spaces in comment",
+                        "images": null,
+                        "videos": null
+                    },
+                    {
+                        "id": "91bf99f3-e051-43ad-a23c-2ed54b08b00b",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544627482467",
+                        "creator": null,
+                        "updatedon": "1544644289437",
+                        "title": "Hash exposed",
+                        "type": "intervention",
+                        "location": "6.5467 8.5432",
+                        "status": "resolved",
+                        "comment": "The government needs to act fast",
+                        "images": null,
+                        "videos": null
+                    },
+                    {
+                        "id": "398e1833-3287-4e28-83e1-756f3ab1be04",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544666316028",
+                        "creator": null,
+                        "updatedon": null,
+                        "title": "New incident",
+                        "type": "red-flag",
+                        "location": "somolu, lagos",
+                        "status": "draft",
+                        "comment": "Documentation ",
+                        "images": null,
+                        "videos": null
+                    }
+                ]
+            }
+
+## Retrieve Incidents By Type [/api/v2/incidents/{type}]
+
+### Retrieve Created Incidents By Type [GET]
+
+    + Request (application/json)
+    
+        + Headers
+
+                x-auth: jsonwebtoken
+
+    + Response 200 (application/json)
+
+        + Body
+
+                {
+                    "status": 200,
+                    "data": {
+                        "red-flag": [
+                            {
+                                "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                                "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                                "createdon": "1544625818082",
+                                "creator": null,
+                                "updatedon": "1544641763810",
+                                "title": "Hash exposed",
+                                "type": "red-flag",
+                                "location": "0.9989 95.6789",
+                                "status": "draft",
+                                "comment": "No white spaces in comment",
+                                "images": null,
+                                "videos": null
+                            },
+                            {
+                                "id": "398e1833-3287-4e28-83e1-756f3ab1be04",
+                                "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                                "createdon": "1544666316028",
+                                "creator": null,
+                                "updatedon": null,
+                                "title": "New incident",
+                                "type": "red-flag",
+                                "location": "somolu, lagos",
+                                "status": "draft",
+                                "comment": "Documentation ",
+                                "images": null,
+                                "videos": null
+                            }
+                        ],
+                        "rowCount": 2
+                    }
+                }
+
+## Retrieve Incident By ID [/incident/{id}]
+
+### Use ID To Retrieve An Incident [GET]
+
+    + Parameters 
+
+        + id (UUID) - The auto generated ID
+
+    + Request (application/json)
+
+        + Headers
+
+            x-auth: jsonwebtoken
+
+    + Response 200 (application/json)
+
+        + Body
+                {
+                    "status": 200,
+                    "data": {
+                        "id": "398e1833-3287-4e28-83e1-756f3ab1be04",
+                        "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                        "createdon": "1544666316028",
+                        "creator": null,
+                        "updatedon": null,
+                        "title": "New incident",
+                        "type": "red-flag",
+                        "location": "somolu, lagos",
+                        "status": "draft",
+                        "comment": "Documentation ",
+                        "images": null,
+                        "videos": null
+                    }
+                }
+
+## Update single red-flag comment [/api/v2/red-flag/comment/{id}]
+
+### Update Comment [PATCH]
+
+    + Request (application/json)
+
+        + Headers
+
+            + x-auth: jsonwebtoken
+    
+    + Response 201 (application/json)
+
+        + Body
+
+            {
+                "status": 201,
+                "data": {
+                    "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                    "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                    "createdon": "1544625818082",
+                    "creator": null,
+                    "updatedon": "1544672805571",
+                    "title": "Hash exposed",
+                    "type": "red-flag",
+                    "location": "0.9989 95.6789",
+                    "status": "draft",
+                    "comment": "The validaation is mad",
+                    "images": null,
+                    "videos": null
+                }
+            }
+
+
+## Update single intervention comment [/api/v2/intervention/comment/{id}]
+
+### Update intervention Comment [PATCH]
+
+    + Request (application/json)
+
+        + Headers
+
+            + x-auth: jsonwebtoken
+    
+    + Response 201 (application/json)
+
+        + Body
+
+            {
+                "status": 201,
+                "data": {
+                    "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                    "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                    "createdon": "1544625818082",
+                    "creator": null,
+                    "updatedon": "1544672805571",
+                    "title": "Hash exposed",
+                    "type": "red-flag",
+                    "location": "0.9989 95.6789",
+                    "status": "draft",
+                    "comment": "The validaation is mad",
+                    "images": null,
+                    "videos": null
+                }
+            }
+
+## Update single red-flag location [/api/v2/red-flag/location/{id}]
+
+### Update location [PATCH]
+
+    + Request (application/json)
+
+        + Headers
+
+            + x-auth: jsonwebtoken
+    
+    + Response 201 (application/json)
+
+        + Body
+
+            {
+                "status": 201,
+                "data": {
+                    "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                    "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                    "createdon": "1544625818082",
+                    "creator": null,
+                    "updatedon": "1544672805571",
+                    "title": "Hash exposed",
+                    "type": "red-flag",
+                    "location": "0.9989 8.6789",
+                    "status": "draft",
+                    "comment": "The validaation is mad",
+                    "images": null,
+                    "videos": null
+                }
+            }
+
+
+## Update single intervention location [/api/v2/intervention/location/{id}]
+
+### Update intervention location [PATCH]
+
+    + Request (application/json)
+
+        + Headers
+
+            + x-auth: jsonwebtoken
+    
+    + Response 201 (application/json)
+
+        + Body
+
+            {
+                "status": 201,
+                "data": {
+                    "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                    "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                    "createdon": "1544625818082",
+                    "creator": null,
+                    "updatedon": "1544672805571",
+                    "title": "Hash exposed",
+                    "type": "red-flag",
+                    "location": "7.9989 8.6789",
+                    "status": "draft",
+                    "comment": "The validaation is mad",
+                    "images": null,
+                    "videos": null
+                }
+            }
+
+## Update Incident Status [/api/v2/update/status]
+
+### Update status via admin [PATCH]
+
+    + Request (application/json)
+
+        + Headers
+
+            + x-auth: jsonwebtoken
+    
+    + Response 201 (application/json)
+
+        + Body
+
+            {
+                "status": 201,
+                "data": {
+                    "id": "f14abe20-c53f-4e95-a317-dfe2c21401fa",
+                    "createdby": "cd27b4ed-7d41-477e-8c3f-e820cc56ee5c",
+                    "createdon": "1544625818082",
+                    "creator": null,
+                    "updatedon": "1544672805571",
+                    "title": "Hash exposed",
+                    "type": "red-flag",
+                    "location": "0.9989 8.6789",
+                    "status": "rejected",
+                    "comment": "The validaation is mad",
+                    "images": null,
+                    "videos": null
+                }
+            }
