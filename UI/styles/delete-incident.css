@@ -68,7 +68,7 @@ nav{
     background: #cf4c41;
     border-radius: .25rem;
     margin: 0 .5rem;
-    color: black;
+    color: white;
     font-weight: 500;
 }
 .navigation__wrapper div:nth-of-type(1),
