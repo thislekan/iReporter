@@ -10,7 +10,7 @@ function rowCountCheck(res, rowCount) {
   if (!rowCount) {
     response = res.status(404).send({
       status: 404,
-      error: 'Sorry. This user is yet to report an incident.',
+      error: 'Sorry. This user is yet to report this type of incident.',
     });
   }
   return response;
@@ -37,7 +37,16 @@ export default {
     incidents(id, createdBy, createdOn, type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
     returning *`;
 
-    const values = [uuid(), userid, new Date().getTime(), type, location, status, comment, title];
+    const values = [
+      uuid(),
+      userid,
+      new Date().getTime(),
+      type.trim(),
+      location.trim(),
+      status.trim(),
+      comment.trim(),
+      title.trim(),
+    ];
 
     try {
       const { rows } = await dbHelper.query(text, values);
@@ -116,7 +125,7 @@ export default {
       }
       return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The incident you requested does not exist', 'error');
     }
   },
   editRedFlagComment: async (req, res) => {
@@ -139,7 +148,7 @@ export default {
       rowCountCheck(res, rowCount);
       return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   editInterventionComment: async (req, res) => {
@@ -162,7 +171,7 @@ export default {
       rowCountCheck(res, rowCount);
       return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   editRedFlagLocation: async (req, res) => {
@@ -182,10 +191,10 @@ export default {
         new Date().getTime(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
-      rowCountCheck(res, rowCount);
+      if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
       return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   editInterventionLocation: async (req, res) => {
@@ -208,7 +217,7 @@ export default {
       rowCountCheck(res, rowCount);
       return responseMessage(res, 201, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   deleteIncident: async (req, res) => {
@@ -222,9 +231,10 @@ export default {
     const values = [id, userid, type.trim()];
     try {
       const { rows } = await dbHelper.query(text, values);
-      return responseMessage(res, 200, rows[0], 'data');
+      console.log(rows);
+      return responseMessage(res, 200, rows, 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   updateIncidentStatus: async (req, res) => {
@@ -236,8 +246,13 @@ export default {
       WHERE id=$1 returning *`;
     const values = [id, status.trim()];
 
-    const { rows, rowCount } = await dbHelper.query(text, values);
-    rowCountCheck(rowCount);
-    return responseMessage(res, 201, rows[0], 'data');
+    try {
+      const { rows, rowCount } = await dbHelper.query(text, values);
+      rowCountCheck(res, rowCount);
+      return responseMessage(res, 201, rows[0], 'data');
+    } catch (error) {
+      console.log(error);
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
+    }
   },
 };

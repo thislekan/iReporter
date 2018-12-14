@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import uuidValidator from 'uuid-validate';
 import userMiddleware from './userMiddleware';
 import dbHelper from '../models/dbHelper';
 
@@ -28,7 +29,7 @@ function responseMessage(res, statusCode, message) {
 }
 
 function checkForTrim(value, res, statusCode, message) {
-  if (!value.trim) return responseMessage(res, statusCode, message);
+  if (!value.trim()) return responseMessage(res, statusCode, message);
   return value;
 }
 
@@ -39,6 +40,16 @@ function typeOfCheck(value, res, statusCode, message) {
   return value;
 }
 
+function confirmIdValidity(res, id) {
+  if (!uuidValidator(id)) return responseMessage(res, 400, 'The record you requested for does not exist');
+  return id;
+}
+
+function confirmCommentIsNotJustNumbers(res, comment) {
+  if (/^\d+$/.test(comment.trim())) return responseMessage(res, 401, 'Comment can not contain just numbers');
+  return res;
+}
+
 export default {
   createIncidentQueryValidator: (req, res, next) => {
     const {
@@ -46,7 +57,7 @@ export default {
     } = req.body;
 
 
-    if (!type && !location && !title && !comment) {
+    if (!type || !location || !title || !comment) {
       return responseMessage(res, 400, 'One or two required fields missing.');
     }
     const inputValues = [type, location, title, comment];
@@ -54,6 +65,7 @@ export default {
 
     inputValues.forEach(element => typeOfCheck(element, res, 400, 'One or more fields contain an unsupported format'));
 
+    confirmCommentIsNotJustNumbers(res, comment);
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, 'The incident type selected is not recogized. Please choose either a red-flag or intervention');
     }
@@ -108,13 +120,14 @@ export default {
     const { id } = req.params;
     const { comment } = req.body;
 
+    confirmIdValidity(res, id);
+
+    if (!comment) return responseMessage(res, 400, 'One or more required fields are empty');
     confirmUserId(res, userid);
 
-    if (!comment.trim()) {
-      return responseMessage(res, 400, 'You can not post an empty comment');
-    }
-
+    if (!comment.trim()) return responseMessage(res, 400, 'You can not post an empty comment');
     typeOfCheck(comment, res, 400, 'One or more fields contain an unsupported type');
+    confirmCommentIsNotJustNumbers(res, comment);
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
@@ -138,11 +151,13 @@ export default {
     const { id } = req.params;
     const { comment } = req.body;
 
+    confirmIdValidity(res, id);
     confirmUserId(res, userid);
 
     if (!comment) return responseMessage(res, 400, 'One or more required fields missing');
     if (!comment.trim()) return responseMessage(res, 400, 'You can not post an empty comment');
     typeOfCheck(comment, res, 400, 'One or more fields contain an unsupported type');
+    confirmCommentIsNotJustNumbers(res, comment);
 
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
@@ -167,6 +182,7 @@ export default {
     const { id } = req.params;
     const { location } = req.body;
 
+    confirmIdValidity(res, id);
     confirmUserId(res, userid);
 
     if (!location) {
@@ -199,6 +215,7 @@ export default {
     const { id } = req.params;
     const { location } = req.body;
 
+    confirmIdValidity(res, id);
     confirmUserId(res, userid);
 
     if (!location) {
@@ -229,19 +246,23 @@ export default {
   updateIncidentStatusInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { status, id } = req.body;
-    if (!status && !id) {
+    if (!status || !id) {
       return responseMessage(res, 400, 'One or more required field missing');
     }
+
+    confirmIdValidity(res, id);
     checkForTrim(status, res, 400, 'One or more required fields are empty');
     typeOfCheck(status, res, 400, 'One or more required fields format is unsupported');
+
     const user = await userMiddleware.findUser(userid);
     if (user && !user.status) {
       if (!user.isadmin) {
         return responseMessage(res, 401, 'Unauthorized request.');
       }
     }
-    if (status === 'draft') {
-      return responseMessage(res, 401, 'incident status can not be draft');
+    if (status === 'draft') return responseMessage(res, 401, 'incident status can not be draft');
+    if (status !== 'under-investigation' && status !== 'rejected' && status !== 'resolved') {
+      return responseMessage(res, 400, 'The selected status is not recognized.');
     }
     return next();
   },
@@ -250,8 +271,10 @@ export default {
   deleteIncidentQueryValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { id, type } = req.body;
-    if (!type && !id) return responseMessage(res, 400, 'One or more required fields empty');
+
+    if (!type || !id) return responseMessage(res, 400, 'One or more required fields empty');
     if (!type.trim()) return responseMessage(res, 400, 'One or more required fields empty');
+    confirmIdValidity(res, id);
 
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, `No ${type} record found`);
@@ -268,9 +291,7 @@ export default {
       return responseMessage(res, 404, 'This record does not exist');
     }
 
-    if (rows[0].createdby !== userid) {
-      return responseMessage(res, 403, 'You do not have access to the record you requested');
-    }
+    if (rows[0].createdby !== userid) return responseMessage(res, 403, 'You do not have access to delete the record you requested');
 
     if (rows[0].type !== type) {
       return responseMessage(res, 409, `Record requested is a ${rows[0].type} and not a ${type}`);

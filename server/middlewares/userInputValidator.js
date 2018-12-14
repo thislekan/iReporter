@@ -48,6 +48,13 @@ function checkUpdateInputsIfString(res, statusCode, message, value) {
   return response;
 }
 
+function checkForTrim(value, res, statusCode, message) {
+  if (!value.trim()) return errorMessage(res, statusCode, message);
+  return value;
+}
+
+const pattern = /[0-9]/g;
+
 
 export default {
   validateCreateUserInput: async (req, res, next) => {
@@ -55,6 +62,11 @@ export default {
     if (!email || !password || !fullname) {
       return errorMessage(res, 400, 'One or more required fields missing.');
     }
+
+    const inputValue = [email, password, fullname];
+    inputValue.forEach(element => checkForTrim(element, res, 400, 'One or more required fields are empty'));
+
+    if (fullname.match(pattern)) return errorMessage(res, 400, 'Fullname can not contain numbers');
 
     checkEmailValidity(res, email);
     checkPasswordIfString(res, password);
@@ -84,7 +96,6 @@ export default {
     checkPasswordCount(res, password);
 
     const user = await userMiddleware.checkIfEmailExist(email);
-    console.log(user);
     res.locals.foundUser = user;
 
     if (!user.email && user.status) {

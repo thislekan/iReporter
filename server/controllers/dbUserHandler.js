@@ -28,7 +28,6 @@ export default {
 
     const newUserId = uuid();
     const token = createToken(newUserId);
-    console.log(token);
 
     const values = [newUserId, email, fullname, hashedPassword];
 
