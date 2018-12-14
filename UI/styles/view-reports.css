@@ -29,6 +29,15 @@ nav{
     padding: 3.5rem 1rem;
     position: relative;
 }
+#welcome-text{
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin: 0;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    color: #117d5a;
+}
 .notification{
     position: fixed;
     height: 25rem;
@@ -159,7 +168,7 @@ h4{
     background: #cf4c41;
     border-radius: .25rem;
     margin: 0 .5rem;
-    color: black;
+    color: white;
     font-weight: 500;
 }
 .navigation__wrapper div:nth-of-type(1),
