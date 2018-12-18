@@ -10,6 +10,13 @@ function createToken(userid) {
   return token;
 }
 
+function responseMessage(res, statusCode, message, type) {
+  return res.status(statusCode).send({
+    status: statusCode,
+    [type]: message,
+  });
+}
+
 export default {
   /**
    * dbHelper.query returns an awaiting promise on debugging.
@@ -20,29 +27,22 @@ export default {
    */
 
   createUser: async (req, res) => {
-    const { email, fullname } = req.body;
+    const { email, lastname, firstname } = req.body;
     const { hashedPassword } = res.locals;
     const text = `INSERT INTO
-    Users(id, email, fullname, password) VALUES($1, $2, $3, $4)
+    Users(id, email, lastname, firstname, password) VALUES($1, $2, $3, $4, $5)
     returning *`;
 
     const newUserId = uuid();
     const token = createToken(newUserId);
-
-    const values = [newUserId, email, fullname, hashedPassword];
+    const values = [newUserId, email, lastname.trim(), firstname.trim(), hashedPassword];
 
     try {
       const { rows } = await dbHelper.query(text, values);
-      console.log(rows);
       delete rows[0].password;
-
-      return res.header('x-auth', token).status(201).send({
-        status: 201,
-        data: rows[0],
-      });
+      return responseMessage(res, 201, { user: rows[0], token }, 'data');
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return responseMessage(res, 400, error, 'error');
     }
   },
   loginUser: async (req, res) => {
@@ -50,12 +50,7 @@ export default {
     delete user.password;
 
     const token = createToken(user.id);
-    console.log(token);
-
-    return res.header('x-auth', token).status(200).send({
-      status: 200,
-      data: user,
-    });
+    return responseMessage(res, 200, { user, token }, 'data');
   },
   // updateUser: async (req, res) => {
   //   console.log('update fired');

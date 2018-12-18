@@ -24,17 +24,13 @@ function responseMessage(res, statusCode, message, type) {
 }
 
 export default {
-  /**
-   * nothong to show here.
-   */
-
   createIncident: async (req, res) => {
     const { userid } = res.locals;
     const {
       type, location, comment, title, status = 'draft',
     } = req.body;
     const text = `INSERT INTO
-    incidents(id, createdBy, createdOn, type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
+    incidents(id, "createdBy", "createdOn", type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
     returning *`;
 
     const values = [
@@ -67,7 +63,7 @@ export default {
           res, 404, 'Sorry. There are no records on our database yet.', 'error',
         );
       }
-      return responseMessage(res, 200, { rows, rowCount }, 'data');
+      return responseMessage(res, 200, { incidents: rows, rowCount }, 'data');
     } catch (error) {
       return responseMessage(res, 400, error, 'error');
     }

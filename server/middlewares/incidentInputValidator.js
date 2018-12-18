@@ -28,16 +28,22 @@ function responseMessage(res, statusCode, message) {
   });
 }
 
-function checkForTrim(value, res, statusCode, message) {
-  if (!value.trim()) return responseMessage(res, statusCode, message);
-  return value;
+function checkForValues(values, res, statusCode) {
+  const [type, location, title, comment] = values;
+  const message = `The following: ${(!type) ? 'type, ' : ''}${(!location) ? 'location, ' : ''}${(!title) ? 'title, ' : ''}${!comment ? 'comment' : ''} are not provided.`;
+  return responseMessage(res, statusCode, message);
 }
 
-function typeOfCheck(value, res, statusCode, message) {
-  if (typeof (value) !== 'string') {
-    return responseMessage(res, statusCode, message);
-  }
-  return value;
+function checkForTrim(values, res, statusCode) {
+  const [type, location, title, comment] = values;
+  const message = `The following: ${(!type.trim()) ? 'type, ' : ''}${(!location.trim()) ? 'location, ' : ''}${(!title.trim()) ? 'title, ' : ''}${!comment.trim() ? 'comment' : ''} contains just white space.`;
+  return responseMessage(res, statusCode, message);
+}
+
+function typeOfCheck(values, res, statusCode) {
+  const [type, location, title, comment] = values;
+  const message = `The following: ${(typeof (type) !== 'string') ? 'type, ' : ''}${(typeof (location) !== 'string') ? 'location, ' : ''}${(typeof (title) !== 'string') ? 'title, ' : ''}${(typeof (comment) !== 'string') ? 'comment' : ''} should all be strings`;
+  return responseMessage(res, statusCode, message);
 }
 
 function confirmIdValidity(res, id) {
@@ -46,8 +52,8 @@ function confirmIdValidity(res, id) {
 }
 
 function confirmCommentIsNotJustNumbers(res, comment) {
-  if (/^\d+$/.test(comment.trim())) return responseMessage(res, 401, 'Comment can not contain just numbers');
-  return res;
+  if (/^\d+$/.test(comment.trim())) return responseMessage(res, 400, 'Comment can not contain just numbers');
+  return '';
 }
 
 export default {
@@ -56,16 +62,19 @@ export default {
       type, status = 'draft', location, title, comment,
     } = req.body;
 
-
-    if (!type || !location || !title || !comment) {
-      return responseMessage(res, 400, 'One or two required fields missing.');
-    }
     const inputValues = [type, location, title, comment];
-    inputValues.forEach(element => checkForTrim(element, res, 400, 'One or more required fields are empty'));
+    if (!type || !location || !title || !comment) return checkForValues(inputValues, res, 400);
 
-    inputValues.forEach(element => typeOfCheck(element, res, 400, 'One or more fields contain an unsupported format'));
+    if (typeof (type) !== 'string' || typeof (location) !== 'string' || typeof (title) !== 'string' || typeof (comment) !== 'string') {
+      return typeOfCheck(inputValues, res, 400);
+    }
 
-    confirmCommentIsNotJustNumbers(res, comment);
+    if (!type.trim() || !location.trim() || !title.trim() || !comment.trim()) {
+      return checkForTrim(inputValues, res, 400);
+    }
+
+    if (/^\d+$/.test(comment.trim())) return confirmCommentIsNotJustNumbers(res, comment);
+
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, 'The incident type selected is not recogized. Please choose either a red-flag or intervention');
     }
@@ -79,21 +88,21 @@ export default {
   getAllUserIncidentsInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (user.status) return findUserFromDb(res, user);
     return next();
   },
 
   getUserIncidentsByTypeInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { type } = req.params;
-    if (!type) {
-      return responseMessage(res, 400, 'The incident type is not included.');
-    }
-    checkForTrim(type, res, 400, 'One or more required fields empty');
-    typeOfCheck(type, res, 400, 'One or more fields contain an unsupported type');
+
+    if (!type) return responseMessage(res, 400, 'The incident type is not included.');
+    if (!type.trim()) return responseMessage(res, 400, 'The incident type can not be empty');
+    if (typeof (type) !== 'string') return responseMessage(res, 400, 'The incident type is not a string');
     if (type !== 'red-flag' && type !== 'intervention') {
       return responseMessage(res, 400, 'The incident type is not recognized');
     }
+
     const user = await userMiddleware.findUser(userid);
     findUserFromDb(res, user);
     return next();
@@ -106,9 +115,7 @@ export default {
 
     confirmUserId(res, userid);
 
-    if (!id) {
-      return responseMessage(res, 400, 'The incident id is not prrovided.');
-    }
+    if (!id) return responseMessage(res, 400, 'The incident id is not prrovided.');
     const user = await userMiddleware.findUser(userid);
     findUserFromDb(res, user);
     return next();

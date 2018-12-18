@@ -15,13 +15,12 @@ const createUserTable = () => {
   users(
     id UUID PRIMARY KEY NOT NULL,
     email VARCHAR(25) NOT NULL UNIQUE,
-    fullname TEXT NOT NULL,
     password VARCHAR(225) NOT NULL,
-    lastname TEXT,
-    firstname TEXT,
+    lastname TEXT NOT NULL,
+    firstname TEXT NOT NULL,
     othernames TEXT,
-    isAdmin BOOLEAN default FALSE,
-    phoneNumber INT,
+    "isAdmin" BOOLEAN default FALSE,
+    "phoneNumber" INT,
     username VARCHAR(10)
   )`;
 
@@ -39,11 +38,12 @@ const createAdmin = () => {
   const hashedpassword = bcrypt.hashSync('admin_super_user', salt);
 
   const text = `INSERT INTO
-    Users(id, email, fullname, password, isAdmin) VALUES($1, $2, $3, $4, $5)`;
+    Users(id, email, lastname, firstname, password, "isAdmin") VALUES($1, $2, $3, $4, $5, $6)`;
   const values = [
     uuid(),
     'admin@email.com',
-    'Admin User',
+    'Admin',
+    'User',
     hashedpassword,
     true,
   ];
@@ -72,10 +72,10 @@ const createIncidentTable = () => {
   const queryTextforIncidents = `CREATE TABLE IF NOT EXISTS
   Incidents(
     id UUID PRIMARY KEY NOT NULL,
-    createdBy UUID NOT NULL,
-    createdOn BIGINT NOT NULL,
+    "createdBy" UUID NOT NULL,
+    "createdOn" BIGINT NOT NULL,
     creator TEXT,
-    updatedOn BIGINT,
+    "updatedOn" BIGINT,
     title VARCHAR(75) NOT NULL,
     type TEXT NOT NULL,
     location VARCHAR(100) NOT NULL,
@@ -83,7 +83,7 @@ const createIncidentTable = () => {
     comment TEXT,
     Images TEXT[],
     Videos TEXT[],
-    FOREIGN KEY (createdBy) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY ("createdBy") REFERENCES users (id) ON DELETE CASCADE
   )`;
 
   client.query(queryTextforIncidents)
@@ -111,7 +111,7 @@ const insertAdminIntoTable = () => createAdmin();
 const createAllTables = () => {
   createUserTable();
   createIncidentTable();
-  // insertAdminIntoTable();
+  insertAdminIntoTable();
 };
 
 const dropAllTables = () => {
@@ -119,18 +119,10 @@ const dropAllTables = () => {
   dropUserTable();
 };
 
-// export default {
-//   createUserTable,
-//   createIncidentTable,
-//   dropUserTable,
-//   dropIncidentTable,
-//   createAllTables,
-//   dropAllTables,
-// };
-
 module.exports = {
   createUserTable,
   createIncidentTable,
+  createAdmin,
   dropUserTable,
   dropIncidentTable,
   createAllTables,
@@ -138,5 +130,4 @@ module.exports = {
   insertAdminIntoTable,
 };
 
-// import 'make-runnable';
 require('make-runnable');
