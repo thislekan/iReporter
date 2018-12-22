@@ -4,7 +4,7 @@
   "description": "An online tool to help fight corruption",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require babel-register",
+    "test": "mocha --require babel-register --exit",
     "test:dev": "nyc mocha --require babel-register",
     "start": "babel-watch server/server.js || true",
     "build": "babel . --ignore node_modules,build --out-dir build",
