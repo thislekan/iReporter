@@ -4,7 +4,7 @@ node_js:
 services:
   - "Postgresql"
 before_script:
-  - psql - U postgres - C 'create database ireporter;'
+  - psql -c 'create database ireporter;' -U postgres
 script:
   - npm run init:db
 after_success:
