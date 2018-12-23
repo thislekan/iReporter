@@ -5,7 +5,35 @@ services:
   - "Postgresql"
 before_script:
   - psql -c 'create database ireporter;' -U postgres
-script:
-  - npm run init:db
+  - psql -c 'CREATE TABLE IF NOT EXISTS
+  users(
+    id UUID PRIMARY KEY NOT NULL,
+    email VARCHAR(25) NOT NULL UNIQUE,
+    password VARCHAR(225) NOT NULL,
+    lastname TEXT NOT NULL,
+    firstname TEXT NOT NULL,
+    othernames TEXT,
+    "isAdmin" BOOLEAN default FALSE,
+    "phoneNumber" INT,
+    username VARCHAR(10)
+  );' -U postgres
+  - psql -c 'CREATE TABLE IF NOT EXISTS
+  Incidents(
+    id UUID PRIMARY KEY NOT NULL,
+    "createdBy" UUID NOT NULL,
+    "createdOn" BIGINT NOT NULL,
+    creator TEXT,
+    "updatedOn" BIGINT,
+    title VARCHAR(75) NOT NULL,
+    type TEXT NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    status TEXT DEFAULT 'draft',
+    comment TEXT,
+    Images TEXT[],
+    Videos TEXT[],
+    FOREIGN KEY ("createdBy") REFERENCES users (id) ON DELETE CASCADE
+  );' -U postgres
+  - psql -c 'INSERT INTO
+    Users(id = 4bec5e40-def7-4320-9cb2-b5d9e99d34f4, email = admin@email.com, lastname = 'Admin', firstname = 'User', password='$2b$10$P/VVylDLPOUmglC1KKhFeeFB7tZXy1VEyzo.b4jSjEKMkwuax8vMO', "isAdmin" = true);' -U postgres
 after_success:
   - npm run coverage
