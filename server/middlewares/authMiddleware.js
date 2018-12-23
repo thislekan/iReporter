@@ -15,25 +15,31 @@ export default {
   comparePassword: (req, res, next) => {
     const { password } = req.body;
     const { foundUser } = res.locals;
-    console.log(foundUser);
-    bcrypt.compare(password, foundUser.password, (err, hashres) => {
-      // res == true
-      console.log(hashres);
-      console.log('calling next soon');
-    });
-    return next();
+    bcrypt.compare(password, foundUser.password)
+      .then((foundPassword) => {
+        if (!foundPassword) {
+          return res.status(400).send({
+            status: 401, error: 'Email or password invalid',
+          });
+        }
+        return next();
+      })
+      .catch(error => res.status(400).send({ status: 400, error }));
   },
   validateToken: (req, res, next) => {
     const token = req.headers['x-auth'];
-    if (!token) {
+    if (!token.trim()) {
       return res.status(400).send({
         status: 400,
         error: 'Provide auth token',
       });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
-    res.locals.userid = decoded;
+    try {
+      const decoded = jwt.verify(token.trim(), process.env.JWT_SECRET);
+      res.locals.userid = decoded;
+    } catch (error) {
+      return res.status(400).send({ status: 400, error: 'Token is invalid' });
+    }
     return next();
   },
 };

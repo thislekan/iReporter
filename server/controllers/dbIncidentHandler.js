@@ -5,12 +5,12 @@ import dbHelper from '../models/dbHelper';
 
 // const findIncidentQuery = 'SELECT * FROM incidents WHERE id = $1';
 
-function rowCountCheck(res, rowCount) {
+function rowCountCheck(res, rowCount, message, type) {
   let response;
   if (!rowCount) {
     response = res.status(404).send({
-      status: 404,
-      error: 'Sorry. This user is yet to report an incident.',
+      status: (type === 'data') ? 200 : 404,
+      [type || 'error']: message || 'Sorry. This user is yet to report this type of incident.',
     });
   }
   return response;
@@ -24,20 +24,25 @@ function responseMessage(res, statusCode, message, type) {
 }
 
 export default {
-  /**
-   * nothong to show here.
-   */
-
   createIncident: async (req, res) => {
     const { userid } = res.locals;
     const {
       type, location, comment, title, status = 'draft',
     } = req.body;
     const text = `INSERT INTO
-    incidents(id, createdBy, createdOn, type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
+    incidents(id, "createdBy", "createdOn", type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
     returning *`;
 
-    const values = [uuid(), userid, new Date().getTime(), type, location, status, comment, title];
+    const values = [
+      uuid(),
+      userid,
+      new Date().getTime(),
+      type.trim(),
+      location.trim(),
+      status.trim(),
+      comment.trim(),
+      title.trim(),
+    ];
 
     try {
       const { rows } = await dbHelper.query(text, values);
@@ -58,7 +63,7 @@ export default {
           res, 404, 'Sorry. There are no records on our database yet.', 'error',
         );
       }
-      return responseMessage(res, 200, { rows, rowCount }, 'data');
+      return responseMessage(res, 200, { incidents: rows, rowCount }, 'data');
     } catch (error) {
       return responseMessage(res, 400, error, 'error');
     }
@@ -67,11 +72,11 @@ export default {
 
   getAllUserIncidents: async (req, res) => {
     const { userid } = res.locals;
-    const text = 'SELECT * FROM incidents WHERE createdby = $1';
+    const text = 'SELECT * FROM incidents WHERE "createdBy" = $1';
 
     try {
       const { rows, rowCount } = await dbHelper.query(text, [userid]);
-      rowCountCheck(res, rowCount);
+      if (!rowCount) return rowCountCheck(res, rowCount, 'User yet to report an incident', 'data');
       return responseMessage(res, 200, rows, 'data');
     } catch (error) {
       return responseMessage(res, 400, error, 'error');
@@ -82,21 +87,16 @@ export default {
   getIncidentsByType: async (req, res) => {
     const { type } = req.params;
     const { userid } = res.locals;
-    const queryText = 'SELECT * FROM incidents WHERE type = $1 AND createdBy = $2';
+    const queryText = 'SELECT * FROM incidents WHERE type = $1 AND "createdBy" = $2';
     const redFlagValue = [(type === 'red-flag') ? 'red-flag' : '', userid];
     const interventionValue = [(type === 'intervention') ? 'intervention' : '', userid];
 
     try {
-      if (type === 'red-flag') {
-        const { rows, rowCount } = await dbHelper.query(queryText, redFlagValue);
-        rowCountCheck(res, rowCount);
-        return responseMessage(res, 200, { [type]: rows, rowCount }, 'data');
-      }
-      const { rows, rowCount } = await dbHelper.query(
-        queryText, interventionValue,
-      );
-      rowCountCheck(res, rowCount);
-      return responseMessage(res, 200, { [type]: rows[0], rowCount }, 'data');
+      let value = interventionValue;
+      if (type === 'red-flag') value = redFlagValue;
+      const { rows, rowCount } = await dbHelper.query(queryText, value);
+      if (!rowCount) return rowCountCheck(res, rowCount);
+      return responseMessage(res, 200, { [type]: rows, rowCount }, 'data');
     } catch (error) {
       return responseMessage(res, 400, error, 'error');
     }
@@ -104,7 +104,7 @@ export default {
   getSingleIncident: async (req, res) => {
     const { userid } = res.locals;
     const { id } = req.params;
-    const text = 'SELECT * FROM incidents where id = $1 AND createdBy = $2';
+    const text = 'SELECT * FROM incidents where id = $1 AND "createdBy" = $2';
     const values = [id, userid];
 
     try {
@@ -116,7 +116,7 @@ export default {
       }
       return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The incident you requested does not exist', 'error');
     }
   },
   editRedFlagComment: async (req, res) => {
@@ -125,8 +125,8 @@ export default {
     const { comment } = req.body;
     const text = `
     UPDATE incidents
-      SET comment=$3, updatedOn=$4
-      WHERE id=$1 AND createdby = $2 AND status = 'draft' AND type = 'red-flag' returning *
+      SET comment=$3, "updatedOn"=$4
+      WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'red-flag' returning *
     `;
     try {
       const values = [
@@ -136,10 +136,10 @@ export default {
         new Date().getTime(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
-      rowCountCheck(res, rowCount);
-      return responseMessage(res, 201, rows[0], 'data');
+      if (!rowCount) return rowCountCheck(res, rowCount);
+      return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   editInterventionComment: async (req, res) => {
@@ -148,8 +148,8 @@ export default {
     const { comment } = req.body;
     const text = `
     UPDATE incidents
-      SET comment=$3, updatedOn=$4
-      WHERE id=$1 AND createdby = $2 AND status = 'draft' AND type = 'intervention' returning *
+      SET comment=$3, "updatedOn"=$4
+      WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'intervention' returning *
     `;
     try {
       const values = [
@@ -159,10 +159,10 @@ export default {
         new Date().getTime(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
-      rowCountCheck(res, rowCount);
-      return responseMessage(res, 201, rows[0], 'data');
+      if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
+      return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   editRedFlagLocation: async (req, res) => {
@@ -171,8 +171,8 @@ export default {
     const { location } = req.body;
     const text = `
     UPDATE incidents
-      SET location=$3, updatedOn=$4
-      WHERE id=$1 AND createdby = $2 AND status = 'draft' AND type = 'red-flag' returning *
+      SET location=$3, "updatedOn"=$4
+      WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'red-flag' returning *
     `;
     try {
       const values = [
@@ -182,10 +182,10 @@ export default {
         new Date().getTime(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
-      rowCountCheck(res, rowCount);
-      return responseMessage(res, 201, rows[0], 'data');
+      if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
+      return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   editInterventionLocation: async (req, res) => {
@@ -194,8 +194,8 @@ export default {
     const { location } = req.body;
     const text = `
     UPDATE incidents
-      SET location=$3, updatedOn=$4
-      WHERE id=$1 AND createdby = $2 AND status = 'draft' AND type = 'intervention' returning *
+      SET location=$3, "updatedOn"=$4
+      WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'intervention' returning *
     `;
     try {
       const values = [
@@ -205,10 +205,10 @@ export default {
         new Date().getTime(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
-      rowCountCheck(res, rowCount);
-      return responseMessage(res, 201, rows[0], 'data');
+      if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
+      return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   deleteIncident: async (req, res) => {
@@ -216,7 +216,7 @@ export default {
     const { id, type } = req.body;
     const text = `
     DELETE FROM incidents 
-    WHERE id=$1 AND status='draft' AND createdBy=$2 AND type=$3
+    WHERE id=$1 AND status='draft' AND "createdBy"=$2 AND type=$3
     returning *
     `;
     const values = [id, userid, type.trim()];
@@ -224,20 +224,23 @@ export default {
       const { rows } = await dbHelper.query(text, values);
       return responseMessage(res, 200, rows[0], 'data');
     } catch (error) {
-      return responseMessage(res, 400, error, 'error');
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
     }
   },
   updateIncidentStatus: async (req, res) => {
-    // const { userid } = res.locals;
     const { id, status } = req.body;
 
     const text = `UPDATE incidents
-      SET status=$2
+      SET status=$2, "updatedOn"=$3
       WHERE id=$1 returning *`;
-    const values = [id, status.trim()];
+    const values = [id, status.trim(), new Date().getTime()];
 
-    const { rows, rowCount } = await dbHelper.query(text, values);
-    rowCountCheck(rowCount);
-    return responseMessage(res, 201, rows[0], 'data');
+    try {
+      const { rows, rowCount } = await dbHelper.query(text, values);
+      if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
+      return responseMessage(res, 200, rows[0], 'data');
+    } catch (error) {
+      return responseMessage(res, 400, 'The record you requested does not exist', 'error');
+    }
   },
 };

@@ -107,7 +107,7 @@ app
 
 app
   .route('*')
-  .get()
+  .get(incidentInputValidator.errorInfo)
   .post(incidentInputValidator.errorInfo)
   .put(incidentInputValidator.errorInfo)
   .patch(incidentInputValidator.errorInfo)

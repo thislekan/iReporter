@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import uuidValidator from 'uuid-validate';
 import userMiddleware from './userMiddleware';
 import dbHelper from '../models/dbHelper';
 
@@ -10,33 +11,39 @@ const findUserFromDb = (res, user) => {
   return user;
 };
 
-const confirmUserId = (res, userid) => {
-  if (!userid) {
-    return res.status(400).send({
-      status: 400,
-      error: 'No user ID found.',
-    });
-  }
-  return userid;
-};
-
-function responseMessage(res, statusCode, message) {
+function errorMessage(res, statusCode, message) {
   return res.status(statusCode).send({
     status: statusCode,
     error: message,
   });
 }
 
-function checkForTrim(value, res, statusCode, message) {
-  if (!value.trim) return responseMessage(res, statusCode, message);
-  return value;
+function checkForValues(values, res, statusCode) {
+  const [type, location, title, comment] = values;
+  const message = `The following: ${(!type) ? 'type, ' : ''}${(!location) ? 'location, ' : ''}${(!title) ? 'title, ' : ''}${!comment ? 'comment' : ''} are not provided.`;
+  return errorMessage(res, statusCode, message);
 }
 
-function typeOfCheck(value, res, statusCode, message) {
-  if (typeof (value) !== 'string') {
-    return responseMessage(res, statusCode, message);
-  }
-  return value;
+function checkForTrim(values, res, statusCode) {
+  const [type, location, title, comment] = values;
+  const message = `The following: ${(!type.trim()) ? 'type, ' : ''}${(!location.trim()) ? 'location, ' : ''}${(!title.trim()) ? 'title, ' : ''}${!comment.trim() ? 'comment' : ''} contains just white space.`;
+  return errorMessage(res, statusCode, message);
+}
+
+function typeOfCheck(values, res, statusCode) {
+  const [type, location, title, comment] = values;
+  const message = `The following: ${(typeof (type) !== 'string') ? 'type, ' : ''}${(typeof (location) !== 'string') ? 'location, ' : ''}${(typeof (title) !== 'string') ? 'title, ' : ''}${(typeof (comment) !== 'string') ? 'comment' : ''} should all be strings`;
+  return errorMessage(res, statusCode, message);
+}
+
+function confirmIdValidity(res, id) {
+  if (!uuidValidator(id)) return errorMessage(res, 400, 'The record you requested for does not exist');
+  return '';
+}
+
+function confirmCommentIsNotJustNumbers(res, comment) {
+  if (/^\d+$/.test(comment.trim())) return errorMessage(res, 400, 'Comment can not contain just numbers');
+  return '';
 }
 
 export default {
@@ -45,20 +52,24 @@ export default {
       type, status = 'draft', location, title, comment,
     } = req.body;
 
-
-    if (!type && !location && !title && !comment) {
-      return responseMessage(res, 400, 'One or two required fields missing.');
-    }
     const inputValues = [type, location, title, comment];
-    inputValues.forEach(element => checkForTrim(element, res, 400, 'One or more required fields are empty'));
+    if (!type || !location || !title || !comment) return checkForValues(inputValues, res, 400);
 
-    inputValues.forEach(element => typeOfCheck(element, res, 400, 'One or more fields contain an unsupported format'));
+    if (typeof (type) !== 'string' || typeof (location) !== 'string' || typeof (title) !== 'string' || typeof (comment) !== 'string') {
+      return typeOfCheck(inputValues, res, 400);
+    }
+
+    if (!type.trim() || !location.trim() || !title.trim() || !comment.trim()) {
+      return checkForTrim(inputValues, res, 400);
+    }
+
+    if (/^\d+$/.test(comment.trim())) return confirmCommentIsNotJustNumbers(res, comment);
 
     if (type !== 'red-flag' && type !== 'intervention') {
-      return responseMessage(res, 400, 'The incident type selected is not recogized. Please choose either a red-flag or intervention');
+      return errorMessage(res, 400, 'The incident type selected is not recogized. Please choose either a red-flag or intervention');
     }
     if (status !== 'draft') {
-      return responseMessage(res, 400, 'You can\'t create an incident with your selected status.');
+      return errorMessage(res, 400, 'You can\'t create an incident with your selected status.');
     }
     return next();
   },
@@ -67,23 +78,20 @@ export default {
   getAllUserIncidentsInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (user && user.status) return findUserFromDb(res, user);
     return next();
   },
 
   getUserIncidentsByTypeInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { type } = req.params;
-    if (!type) {
-      return responseMessage(res, 400, 'The incident type is not included.');
-    }
-    checkForTrim(type, res, 400, 'One or more required fields empty');
-    typeOfCheck(type, res, 400, 'One or more fields contain an unsupported type');
+
     if (type !== 'red-flag' && type !== 'intervention') {
-      return responseMessage(res, 400, 'The incident type is not recognized');
+      return errorMessage(res, 400, 'The incident type is not recognized');
     }
+
     const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (user && user.status) return findUserFromDb(res, user);
     return next();
   },
 
@@ -92,13 +100,9 @@ export default {
     const { userid } = res.locals;
     const { id } = req.params;
 
-    confirmUserId(res, userid);
-
-    if (!id) {
-      return responseMessage(res, 400, 'The incident id is not prrovided.');
-    }
+    if (!uuidValidator(id)) return errorMessage(res, 400, 'The incident id is invalid.');
     const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (user && user.status) return findUserFromDb(res, user);
     return next();
   },
 
@@ -108,27 +112,26 @@ export default {
     const { id } = req.params;
     const { comment } = req.body;
 
-    confirmUserId(res, userid);
+    if (!uuidValidator(id)) return confirmIdValidity(res, id);
+    if (!comment) return errorMessage(res, 400, 'The comment field is empty');
 
-    if (!comment.trim()) {
-      return responseMessage(res, 400, 'You can not post an empty comment');
+    if (typeof (comment) !== 'number' && !comment.trim()) {
+      return errorMessage(res, 400, 'You can not post an empty comment');
     }
 
-    typeOfCheck(comment, res, 400, 'One or more fields contain an unsupported type');
+    if (typeof (comment) !== 'string') return errorMessage(res, 400, 'Only strings allowed for comment');
+
+    if (/^\d+$/.test(comment)) return confirmCommentIsNotJustNumbers(res, comment);
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
 
-    if (rows[0].type !== 'red-flag') {
-      return responseMessage(res, 401, 'The record you requested is not a red flag');
-    }
+    if (rows[0].createdBy !== userid) return errorMessage(res, 401, 'The record was not created by this user');
 
-    if (rows[0].status !== 'draft') {
-      return responseMessage(res, 401, `Records of ${rows[0].status} can not be updated`);
-    }
+    if (rows[0].type !== 'red-flag') return errorMessage(res, 401, 'The record you requested is not a red flag');
 
-    const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (rows[0].status !== 'draft') return errorMessage(res, 400, `The ${rows[0].status} record can not be updated`);
+
     return next();
   },
 
@@ -138,26 +141,26 @@ export default {
     const { id } = req.params;
     const { comment } = req.body;
 
-    confirmUserId(res, userid);
+    if (!uuidValidator(id)) return confirmIdValidity(res, id);
+    if (!comment) return errorMessage(res, 400, 'The comment field is empty');
 
-    if (!comment) return responseMessage(res, 400, 'One or more required fields missing');
-    if (!comment.trim()) return responseMessage(res, 400, 'You can not post an empty comment');
-    typeOfCheck(comment, res, 400, 'One or more fields contain an unsupported type');
+    if (typeof (comment) !== 'number' && !comment.trim()) {
+      return errorMessage(res, 400, 'You can not post an empty comment');
+    }
+    if (typeof (comment) !== 'string') return errorMessage(res, 400, 'Only strings allowed for comment');
+
+    if (/^\d+$/.test(comment)) return confirmCommentIsNotJustNumbers(res, comment);
 
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
 
-    if (rows[0].type !== 'intervention') {
-      return responseMessage(res, 401, 'The record you requested is not an intervention');
-    }
+    if (rows[0].createdBy !== userid) return errorMessage(res, 401, 'The record was not created by this user');
 
-    if (rows[0].status !== 'draft') {
-      return responseMessage(res, 401, `Records of ${rows[0].status} can not be updated`);
-    }
+    if (rows[0].type !== 'intervention') return errorMessage(res, 401, 'The record you requested is not an intervention');
 
-    const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (rows[0].status !== 'draft') return errorMessage(res, 400, `The ${rows[0].status} record can not be updated`);
+
     return next();
   },
 
@@ -167,29 +170,27 @@ export default {
     const { id } = req.params;
     const { location } = req.body;
 
-    confirmUserId(res, userid);
+    if (!uuidValidator(id)) return confirmIdValidity(res, id);
 
-    if (!location) {
-      return responseMessage(res, 400, 'One or more required fields missing');
-    }
-    if (!location.trim()) {
-      return responseMessage(res, 400, 'You can not post an empty comment');
-    }
-    typeOfCheck(location, res, 400, 'One or more fields contain an unsupported type');
+    if (!location) return errorMessage(res, 400, 'The location field is missing');
+    if (typeof (location) !== 'string') return errorMessage(res, 400, 'Location can only be a string');
+    if (!location.trim()) return errorMessage(res, 400, 'You can not post an empty location');
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
 
+    if (rows[0].createdBy !== userid) {
+      return errorMessage(res, 401, 'The record was not created by this user');
+    }
+
     if (rows[0].type !== 'intervention') {
-      return responseMessage(res, 401, 'The record you requested is not an intervention');
+      return errorMessage(res, 401, 'The record you requested is not an intervention');
     }
 
     if (rows[0].status !== 'draft') {
-      return responseMessage(res, 401, `Records of ${rows[0].status} can not be updated`);
+      return errorMessage(res, 400, `The ${rows[0].status} record can not be updated`);
     }
 
-    const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
     return next();
   },
 
@@ -199,29 +200,27 @@ export default {
     const { id } = req.params;
     const { location } = req.body;
 
-    confirmUserId(res, userid);
+    if (!uuidValidator(id)) return confirmIdValidity(res, id);
+    if (!location) return errorMessage(res, 400, 'The location field is missing');
 
-    if (!location) {
-      return responseMessage(res, 400, 'One or more required fields missing');
-    }
-    if (!location.trim()) {
-      return responseMessage(res, 400, 'You can not post an empty comment');
-    }
-    typeOfCheck(location, res, 400, 'One or more required fields contains unsuppported format');
+    if (typeof (location) !== 'string') return errorMessage(res, 400, 'Location can only be a string');
+    if (!location.trim()) return errorMessage(res, 400, 'You can not post an empty location');
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows } = await dbHelper.query(text, [id]);
 
+    if (rows[0].createdBy !== userid) {
+      return errorMessage(res, 401, 'The record was not created by this user');
+    }
+
     if (rows[0].type !== 'red-flag') {
-      return responseMessage(res, 401, 'The record you requested is not a red flag');
+      return errorMessage(res, 401, 'The record you requested is not a red flag');
     }
 
     if (rows[0].status !== 'draft') {
-      return responseMessage(res, 401, `Records of ${rows[0].status} can not be updated`);
+      return errorMessage(res, 400, `The ${rows[0].status} record can not be updated`);
     }
 
-    const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
     return next();
   },
 
@@ -229,19 +228,22 @@ export default {
   updateIncidentStatusInputValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { status, id } = req.body;
-    if (!status && !id) {
-      return responseMessage(res, 400, 'One or more required field missing');
-    }
-    checkForTrim(status, res, 400, 'One or more required fields are empty');
-    typeOfCheck(status, res, 400, 'One or more required fields format is unsupported');
+
+    if (!status) return errorMessage(res, 400, 'The status is not provided');
+    if (!id) return errorMessage(res, 400, 'The id is not provided');
+    if (!uuidValidator(id)) return confirmIdValidity(res, id);
+    if (typeof (status) !== 'string') return errorMessage(res, 400, 'Status needs to be a string');
+    if (!status.trim()) return errorMessage(res, 400, 'Status can not be empty.');
+
     const user = await userMiddleware.findUser(userid);
     if (user && !user.status) {
-      if (!user.isadmin) {
-        return responseMessage(res, 401, 'Unauthorized request.');
+      if (!user.isAdmin) {
+        return errorMessage(res, 401, 'Unauthorized request.');
       }
     }
-    if (status === 'draft') {
-      return responseMessage(res, 401, 'incident status can not be draft');
+    if (status === 'draft') return errorMessage(res, 400, 'The incident status can not be draft');
+    if (status !== 'under-investigation' && status !== 'rejected' && status !== 'resolved') {
+      return errorMessage(res, 400, 'The selected status is not recognized.');
     }
     return next();
   },
@@ -250,34 +252,30 @@ export default {
   deleteIncidentQueryValidator: async (req, res, next) => {
     const { userid } = res.locals;
     const { id, type } = req.body;
-    if (!type && !id) return responseMessage(res, 400, 'One or more required fields empty');
-    if (!type.trim()) return responseMessage(res, 400, 'One or more required fields empty');
 
-    if (type !== 'red-flag' && type !== 'intervention') {
-      return responseMessage(res, 400, `No ${type} record found`);
-    }
-    confirmUserId(res, userid);
+    if (!id) return errorMessage(res, 400, 'The incident id is not provided');
+    if (!type) return errorMessage(res, 400, 'The incident type is not provided');
+    if (typeof (type) !== 'string') return errorMessage(res, 400, 'The incident type can only be a string');
+    if (!type.trim()) return errorMessage(res, 400, 'The incident type can not be empty');
+    if (!uuidValidator(id)) return confirmIdValidity(res, id);
+
+    if (type !== 'red-flag' && type !== 'intervention') return errorMessage(res, 400, `No ${type} record found`);
 
     const user = await userMiddleware.findUser(userid);
-    findUserFromDb(res, user);
+    if (user && user.status) return findUserFromDb(res, user);
 
     const text = 'SELECT * FROM incidents WHERE id = $1';
     const { rows, rowCount } = await dbHelper.query(text, [id]);
 
-    if (!rowCount) {
-      return responseMessage(res, 404, 'This record does not exist');
-    }
+    if (!rowCount) return errorMessage(res, 404, 'This record does not exist');
 
-    if (rows[0].createdby !== userid) {
-      return responseMessage(res, 403, 'You do not have access to the record you requested');
-    }
+    if (rows[0].createdBy !== userid) return errorMessage(res, 403, 'You do not have access to delete the record you requested');
 
-    if (rows[0].type !== type) {
-      return responseMessage(res, 409, `Record requested is a ${rows[0].type} and not a ${type}`);
-    }
+    if (rows[0].type !== type) return errorMessage(res, 409, `Record requested is a ${rows[0].type} and not a ${type}`);
+
+    if (rows[0].status !== 'draft') return errorMessage(res, 400, 'The requested record can not be deleted');
     return next();
   },
-
 
   errorInfo: (req, res) => {
     res.status(404).send({
