@@ -1,5 +1,11 @@
 language: node_js
 node_js:
   - "stable"
+services:
+  - "Postgresql"
+before_script:
+  - psql - U postgres - C 'create database ireporter;'
+script:
+  - npm run init:db
 after_success:
   - npm run coverage

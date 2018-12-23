@@ -11,7 +11,8 @@
     "start:prod": "node build/server/server.js",
     "start-build:prod": "node build/server/server.js",
     "heroku-postbuild": "npm run build",
-    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "init:db": "node server/models/datatbase.js createAllTables"
   },
   "repository": {
     "type": "git",
