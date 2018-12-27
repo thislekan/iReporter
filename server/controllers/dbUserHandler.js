@@ -27,15 +27,15 @@ export default {
    */
 
   createUser: async (req, res) => {
-    const { email, lastname, firstname } = req.body;
+    const { email, lastName, firstName } = req.body;
     const { hashedPassword } = res.locals;
     const text = `INSERT INTO
-    Users(id, email, lastname, firstname, password) VALUES($1, $2, $3, $4, $5)
+    Users(id, email, "lastName", "firstName", password) VALUES($1, $2, $3, $4, $5)
     returning *`;
 
     const newUserId = uuid();
     const token = createToken(newUserId);
-    const values = [newUserId, email, lastname.trim(), firstname.trim(), hashedPassword];
+    const values = [newUserId, email, lastName.trim(), firstName.trim(), hashedPassword];
 
     try {
       const { rows } = await dbHelper.query(text, values);
@@ -57,9 +57,9 @@ export default {
   //   const { userid } = req.headers;
   //   const {
   //     fullname,
-  //     lastname,
-  //     firstname,
-  //     othernames,
+  //     lastName,
+  //     firstName,
+  //     otherNames,
   //     phoneNumber,
   //     username,
   //   } = req.body;
@@ -69,7 +69,7 @@ export default {
   //   }
 
   //   const text = `UPDATE Users
-  //     SET fullname=$1,lastname=$2,firstname=$3,othernames=$4,phoneNumber=$5,username=$6
+  //     SET fullname=$1,lastName=$2,firstName=$3,otherNames=$4,phoneNumber=$5,username=$6
   //     WHERE id=$7 returning *`;
 
   //   try {
@@ -82,7 +82,7 @@ export default {
 
   //     if (rows.fullname) {
   //       const userFullname = rows.fullname;
-  //       if (!userFullname.includes(lastname) && !userFullname.includes(firstname)) {
+  //       if (!userFullname.includes(lastName) && !userFullname.includes(firstName)) {
   //         return errorMessage(
   //           res, 400,
   //           'Your last name and first name needs to match your full name',
@@ -93,9 +93,9 @@ export default {
 
   //     const values = [
   //       fullname || rows.fullname,
-  //       lastname || rows.lastname,
-  //       firstname || rows.firstname,
-  //       othernames || rows.othernames,
+  //       lastName || rows.lastName,
+  //       firstName || rows.firstName,
+  //       otherNames || rows.otherNames,
   //       phoneNumber || rows.phoneNumber,
   //       username || rows.username,
   //       userid,

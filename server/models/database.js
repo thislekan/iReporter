@@ -16,12 +16,12 @@ const createUserTable = () => {
     id UUID PRIMARY KEY NOT NULL,
     email VARCHAR(25) NOT NULL UNIQUE,
     password VARCHAR(225) NOT NULL,
-    lastname TEXT NOT NULL,
-    firstname TEXT NOT NULL,
-    othernames TEXT,
+    "lastName" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "otherNames" TEXT,
     "isAdmin" BOOLEAN default FALSE,
     "phoneNumber" INT,
-    username VARCHAR(10)
+    "userName" VARCHAR(10)
   )`;
 
   client.query(queryTextforUsers)
@@ -38,7 +38,7 @@ const createAdmin = () => {
   const hashedpassword = bcrypt.hashSync('admin_super_user', salt);
 
   const text = `INSERT INTO
-    Users(id, email, lastname, firstname, password, "isAdmin") VALUES($1, $2, $3, $4, $5, $6)`;
+    Users(id, email, "lastName", "firstName", password, "isAdmin") VALUES($1, $2, $3, $4, $5, $6)`;
   const values = [
     uuid(),
     'admin@email.com',
