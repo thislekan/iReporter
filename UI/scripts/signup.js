@@ -1,5 +1,5 @@
-const firstNameInput = document.getElementById('first-lastName');
-const lastNameInput = document.getElementById('last-lastName');
+const firstNameInput = document.getElementById('first-name');
+const lastNameInput = document.getElementById('last-name');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const passwordInputCheck = document.getElementById('confirm-password');
@@ -10,7 +10,6 @@ const notificationBoxCloser = document.getElementById('close-notification');
 const notificationTextElement = notificationBox.querySelector('p');
 
 const signUpButton = document.getElementById('signup-btn');
-const apiVersion = 'https://ireporter-endpoint.herokuapp.com/api/v2/';
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';
@@ -27,29 +26,38 @@ function verifyRequiredFields() {
   const password = passwordInput.value.trim();
   const passwordCheck = passwordInputCheck.value.trim();
 
-  if (!lastName || !email || !password || !passwordCheck || firstName) {
+  if (!lastName || !email || !password || !passwordCheck || !firstName) {
     notificationTextElement.innerText = 'All fields are required. Please fill them all.'
-    displayNotification();
-  } else {
-    if (password.length <= 5 || passwordCheck.length <= 5) {
-      notificationTextElement.innerText = 'Password needs to be at least 6 characters long.'
-      displayNotification()
-    } else {
-      if (password !== passwordCheck) {
-        notificationTextElement.innerText = 'Unmatching password. Password needs to match for signup to be complete.'
-        displayNotification();
-      }
-      lastNameInput.value = '';
-      passwordInput.value = '';
-      passwordInputCheck.value = '';
-      return { lastName, email, password }
-    }
+    return displayNotification();
   }
+  if (password.length <= 5 || passwordCheck.length <= 5) {
+    notificationTextElement.innerText = 'Password needs to be at least 6 characters long.'
+    return displayNotification()
+  }
+  if (password !== passwordCheck) {
+    notificationTextElement.innerText = 'Unmatching password. Password needs to match for signup to be complete.'
+    return displayNotification();
+  }
+  return { lastName, firstName, email, password }
 }
 
 signUpButton.addEventListener('click', () => {
-  const { email = '', password = '', lastName = '' } = verifyRequiredFields();
-  (email) ? sessionStorage.setItem('email', email) : '';
-  (password) ? sessionStorage.setItem('password', password) : '';
-  if (email && password && lastName) return location.href = '../views/login.html';
+  const { lastName, firstName, email, password } = verifyRequiredFields();
+  console.log(lastName, firstName, email, password)
+  const options = {
+    method: 'POST',
+    body: JSON.stringify({ lastName, firstName, password, email }),
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }
+  fetch(`${apiVersion}user/create`, options)
+    .then(handleResponse)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
+  // lastNameInput.value = '';
+  // passwordInput.value = '';
+  // passwordInputCheck.value = '';
+  // firstNameInput.value = '';
+  // emailInput.value = '';
 });
