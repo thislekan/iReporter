@@ -22,8 +22,8 @@ function errorMessage(res, statusCode, message) {
 // }
 
 function checkForTrim(values, res, statusCode) {
-  const [email, firstname, lastname] = values;
-  const message = `The following: ${(!email.trim()) ? 'email, ' : ''}${(!firstname.trim()) ? 'firstname, ' : ''}${(!lastname.trim()) ? 'lastname' : ''} contains just white spaces.`;
+  const [email, firstName, lastName] = values;
+  const message = `The following: ${(!email.trim()) ? 'email, ' : ''}${(!firstName.trim()) ? 'firstName, ' : ''}${(!lastName.trim()) ? 'lastName' : ''} contains just white spaces.`;
   return errorMessage(res, statusCode, message);
 }
 
@@ -31,21 +31,21 @@ function checkForTrim(values, res, statusCode) {
 export default {
   validateCreateUserInput: async (req, res, next) => {
     const {
-      email, password, lastname, firstname,
+      email, password, lastName, firstName,
     } = req.body;
 
-    if (!email || !password || !lastname || !firstname) {
-      const message = `The following fields are not provided: ${!email ? 'email, ' : ''}${!password ? 'password, ' : ''}${!lastname ? 'lastname, ' : ''}${!firstname ? 'firstname' : ''}.`;
+    if (!email || !password || !lastName || !firstName) {
+      const message = `The following fields are not provided: ${!email ? 'email, ' : ''}${!password ? 'password, ' : ''}${!lastName ? 'lastName, ' : ''}${!firstName ? 'firstName' : ''}.`;
       return errorMessage(res, 400, message);
     }
 
-    const inputValues = [email, lastname, firstname];
-    if (!email.trim() || !lastname.trim() || !firstname.trim()) {
+    const inputValues = [email, lastName, firstName];
+    if (!email.trim() || !lastName.trim() || !firstName.trim()) {
       return checkForTrim(inputValues, res, 400);
     }
 
-    if (firstname.match(pattern) || lastname.match(pattern)) {
-      const message = `The ${(firstname.match(pattern)) ? 'firstname, ' : ''}${(lastname.match(pattern)) ? 'lastname' : ''} can not contain numbers`;
+    if (firstName.match(pattern) || lastName.match(pattern)) {
+      const message = `The ${(firstName.match(pattern)) ? 'firstName, ' : ''}${(lastName.match(pattern)) ? 'lastName' : ''} can not contain numbers`;
       return errorMessage(res, 400, message);
     }
 
@@ -97,35 +97,35 @@ export default {
   //   const { userid } = req.headers;
   //   const {
   //     fullname,
-  //     lastname,
-  //     firstname,
-  //     othernames,
+  //     lastName,
+  //     firstName,
+  //     otherNames,
   //     phoneNumber,
-  //     username,
+  //     userName,
   //   } = req.body;
 
   //   if (!userid) {
   //     return errorMessage(res, 404, 'User not found');
   //   }
 
-  //   if (!fullname && !lastname && !firstname && !othernames && !phoneNumber && !username) {
+  //   if (!fullname && !lastName && !firstName && !otherNames && !phoneNumber && !userName) {
   //     return errorMessage(res, 400, 'Can\'t update user with empty fields');
   //   }
 
   //   if (fullname) {
   //     checkUpdateInputsIfString(res, 400, 'The fullname is invalid', fullname);
   //   }
-  //   if (lastname) {
-  //     checkUpdateInputsIfString(res, 400, 'The lastname is invalid', lastname);
+  //   if (lastName) {
+  //     checkUpdateInputsIfString(res, 400, 'The lastName is invalid', lastName);
   //   }
-  //   if (firstname) {
-  //     checkUpdateInputsIfString(res, 400, 'The firstname is invalid', firstname);
+  //   if (firstName) {
+  //     checkUpdateInputsIfString(res, 400, 'The firstName is invalid', firstName);
   //   }
-  //   if (othernames) {
-  //     checkUpdateInputsIfString(res, 400, 'The other names you provided is invalid', othernames);
+  //   if (otherNames) {
+  //     checkUpdateInputsIfString(res, 400, 'The other names you provided is invalid', otherNames);
   //   }
-  //   if (username) {
-  //     checkUpdateInputsIfString(res, 400, 'The username is invalid', username);
+  //   if (userName) {
+  //     checkUpdateInputsIfString(res, 400, 'The userName is invalid', userName);
   //   }
 
   //   return next();

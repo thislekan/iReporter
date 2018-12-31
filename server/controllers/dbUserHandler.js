@@ -27,15 +27,15 @@ export default {
    */
 
   createUser: async (req, res) => {
-    const { email, lastname, firstname } = req.body;
+    const { email, lastName, firstName } = req.body;
     const { hashedPassword } = res.locals;
     const text = `INSERT INTO
-    Users(id, email, lastname, firstname, password) VALUES($1, $2, $3, $4, $5)
+    Users(id, email, "lastName", "firstName", password) VALUES($1, $2, $3, $4, $5)
     returning *`;
 
     const newUserId = uuid();
     const token = createToken(newUserId);
-    const values = [newUserId, email, lastname.trim(), firstname.trim(), hashedPassword];
+    const values = [newUserId, email, lastName.trim(), firstName.trim(), hashedPassword];
 
     try {
       const { rows } = await dbHelper.query(text, values);
