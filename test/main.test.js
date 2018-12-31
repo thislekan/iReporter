@@ -8,15 +8,31 @@ const request = supertest(app);
 const apiVersionTwo = '/api/v2/';
 
 const user = {
-  firstname: 'John',
-  lastname: 'Bellew',
-  othernames: 'Gbeborun',
+  firstName: 'John',
+  lastName: 'Bellew',
+  otherNames: 'Gbeborun',
   phoneNumber: '080986544443',
   email: 'testuser@email.com',
   password: 'test_user_419',
   isAdmin: false,
   token: '',
   id: '',
+};
+
+const randomUser = {
+  firstName: 'Synchronous',
+  lastName: 'Javascript',
+  email: 'async@await.com',
+  password: 'asyncawaitjs',
+  token: '',
+  id: '',
+  isAdmin: false,
+};
+
+const admin = {
+  email: 'admin@email.com',
+  password: 'admin_super_user',
+  token: '',
 };
 
 const redFlag = {
@@ -67,7 +83,7 @@ describe('Create a user without any value', () => {
       .end((error, response) => {
         expect(response.status).to.equal(400);
         expect(typeof (response.body)).to.equal('object');
-        expect(response.body.error).to.equal('The following fields are not provided: email, password, lastname, firstname.');
+        expect(response.body.error).to.equal('The following fields are not provided: email, password, lastName, firstName.');
       });
     done();
   });
@@ -79,8 +95,8 @@ describe('Create a user with lots of white spaces', () => {
       .send({
         email: 'newemail@email.com',
         password: '         ',
-        firstname: 'Hilarious',
-        lastname: '            ',
+        firstName: 'Hilarious',
+        lastName: '            ',
       })
       .end(async (error, response) => {
         if (error) return done(error);
@@ -97,13 +113,13 @@ describe('Create a user with alphanumeric names', () => {
       .send({
         email: user.email,
         password: user.password,
-        firstname: '900Users',
-        lastname: '500 subscribers',
+        firstName: '900Users',
+        lastName: '500 subscribers',
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
         expect(typeof (response.body)).to.equal('object');
-        expect(response.body.error).to.equal('The firstname, lastname can not contain numbers');
+        expect(response.body.error).to.equal('The firstName, lastName can not contain numbers');
       });
     done();
   });
@@ -111,10 +127,10 @@ describe('Create a user with alphanumeric names', () => {
 
 describe('Create a user without using string as password', () => {
   it('Should return an error', (done) => {
-    const { email, firstname, lastname } = user;
+    const { email, firstName, lastName } = user;
     request.post(`${apiVersionTwo}user/create`)
       .send({
-        email, password: 78474567890, lastname, firstname,
+        email, password: 78474567890, lastName, firstName,
       })
       .end((error, response) => {
         expect(response.status).to.equal(400);
@@ -127,10 +143,10 @@ describe('Create a user without using string as password', () => {
 
 describe('Create a user with an invalid email', () => {
   it('Should return an error', (done) => {
-    const { password, firstname, lastname } = user;
+    const { password, firstName, lastName } = user;
     request.post(`${apiVersionTwo}user/create`)
       .send({
-        email: 'yony', password, lastname, firstname,
+        email: 'yony', password, lastName, firstName,
       })
       .end(async (error, response) => {
         await expect(response.status).to.equal(400);
@@ -143,10 +159,10 @@ describe('Create a user with an invalid email', () => {
 
 describe('Create a user with a short password', () => {
   it('Should return an error', (done) => {
-    const { email, firstname, lastname } = user;
+    const { email, firstName, lastName } = user;
     request.post(`${apiVersionTwo}user/create`)
       .send({
-        email, password: '12', lastname, firstname,
+        email, password: '12', lastName, firstName,
       })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(400);
@@ -157,17 +173,21 @@ describe('Create a user with a short password', () => {
   });
 });
 
-describe('Create a user with an existing email', () => {
-  it('Should return an error', (done) => {
-    const { password, firstname, lastname } = user;
+describe('Create a user with all required details', () => {
+  it('Should create a user', (done) => {
+    const {
+      email, password, firstName, lastName,
+    } = user;
     request.post(`${apiVersionTwo}user/create`)
       .send({
-        email: 'email@password.com', password, lastname, firstname,
+        email, password, lastName, firstName,
       })
       .end(async (error, response) => {
-        await expect(response.body.status).to.equal(400);
+        user.id = response.body.data.user.id;
+        await expect(response.body.status).to.equal(201);
         await expect(typeof (response.body)).to.equal('object');
-        await expect(response.body.error).to.equal('This email is already in use.');
+        await expect(response.body.data.user.lastName).to.equal(lastName);
+        await expect(response.body.data.user.password).to.undefined;
         done();
       });
   });
@@ -176,18 +196,36 @@ describe('Create a user with an existing email', () => {
 describe('Create a user with all required details', () => {
   it('Should create a user', (done) => {
     const {
-      email, password, firstname, lastname,
+      email, password, firstName, lastName,
+    } = randomUser;
+    request.post(`${apiVersionTwo}user/create`)
+      .send({
+        email, password, lastName, firstName,
+      })
+      .end(async (error, response) => {
+        randomUser.id = response.body.data.user.id;
+        await expect(response.body.status).to.equal(201);
+        await expect(typeof (response.body)).to.equal('object');
+        await expect(response.body.data.user.lastName).to.equal(lastName);
+        await expect(response.body.data.user.password).to.undefined;
+        done();
+      });
+  });
+});
+
+describe('Create a user with an existing email', () => {
+  it('Should return an error', (done) => {
+    const {
+      email, password, firstName, lastName,
     } = user;
     request.post(`${apiVersionTwo}user/create`)
       .send({
-        email, password, lastname, firstname,
+        email, password, lastName, firstName,
       })
       .end(async (error, response) => {
-        user.id = response.body.data.user.id;
-        await expect(response.body.status).to.equal(201);
+        await expect(response.body.status).to.equal(400);
         await expect(typeof (response.body)).to.equal('object');
-        await expect(response.body.data.user.lastname).to.equal(lastname);
-        await expect(response.body.data.user.password).to.undefined;
+        await expect(response.body.error).to.equal('This email is already in use.');
         done();
       });
   });
@@ -268,6 +306,38 @@ describe('Login an existing user', () => {
       .send({ email, password })
       .end(async (error, response) => {
         user.token = response.body.data.token;
+        await expect(response.body.status).to.equal(200);
+        await expect(typeof (response.body)).to.equal('object');
+        await expect(response.body.data.user.password).to.undefined;
+        await expect(response.body.data.user.email).to.equal(email);
+        done();
+      });
+  });
+});
+
+describe('Login random user', () => {
+  it('Should return user object and token', (done) => {
+    const { email, password } = randomUser;
+    request.post(`${apiVersionTwo}user/login`)
+      .send({ email, password })
+      .end(async (error, response) => {
+        randomUser.token = response.body.data.token;
+        await expect(response.body.status).to.equal(200);
+        await expect(typeof (response.body)).to.equal('object');
+        await expect(response.body.data.user.password).to.undefined;
+        await expect(response.body.data.user.email).to.equal(email);
+        done();
+      });
+  });
+});
+
+describe('Login an admin user', () => {
+  it('Should return user object and token', (done) => {
+    const { email, password } = admin;
+    request.post(`${apiVersionTwo}user/login`)
+      .send({ email, password })
+      .end(async (error, response) => {
+        admin.token = response.body.data.token;
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
         await expect(response.body.data.user.password).to.undefined;
@@ -478,7 +548,7 @@ describe('Get a list of one user\'s incidents without a token', () => {
 describe('Get a list of incidents from user with none', () => {
   it('Should return an empty object', (done) => {
     request.get(`${apiVersionTwo}user/incidents`)
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.ODQ3MWU0ODMtZjQ0Mi00MzVmLTlmMGYtZjBhZjcyMzk0MmE5.GTm5h0NgtKv2SBLqAIu575VeYkfB0rOXhBRI5lm-Wrg' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -586,7 +656,7 @@ describe('Get single incident from User with invalid id', () => {
 describe('Get single incident from User without record', () => {
   it('Should return an error', (done) => {
     request.get(`${apiVersionTwo}incident/${intervention.id}`)
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.ODQ3MWU0ODMtZjQ0Mi00MzVmLTlmMGYtZjBhZjcyMzk0MmE5.GTm5h0NgtKv2SBLqAIu575VeYkfB0rOXhBRI5lm-Wrg' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(404);
         await expect(typeof (response.body)).to.equal('object');
@@ -721,7 +791,7 @@ describe('Edit a red-flag\'s comment with another user id', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}red-flag/comment/${redFlag.id}`)
       .send({ comment: '8907790 Christain Dior Denim Flow' })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.ODQ3MWU0ODMtZjQ0Mi00MzVmLTlmMGYtZjBhZjcyMzk0MmE5.GTm5h0NgtKv2SBLqAIu575VeYkfB0rOXhBRI5lm-Wrg' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(401);
         await expect(typeof (response.body)).to.equal('object');
@@ -845,7 +915,7 @@ describe('Edit an intervention\'s comment with another user id', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}intervention/comment/${intervention.id}`)
       .send({ comment: '8907790 Christain Dior Denim Flow' })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.ODQ3MWU0ODMtZjQ0Mi00MzVmLTlmMGYtZjBhZjcyMzk0MmE5.GTm5h0NgtKv2SBLqAIu575VeYkfB0rOXhBRI5lm-Wrg' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(401);
         await expect(typeof (response.body)).to.equal('object');
@@ -944,7 +1014,7 @@ describe('Edit an intervention\'s location with another user id', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}intervention/location/${intervention.id}`)
       .send({ location: '9.345 6.3566' })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.ODQ3MWU0ODMtZjQ0Mi00MzVmLTlmMGYtZjBhZjcyMzk0MmE5.GTm5h0NgtKv2SBLqAIu575VeYkfB0rOXhBRI5lm-Wrg' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(401);
         await expect(typeof (response.body)).to.equal('object');
@@ -1058,7 +1128,7 @@ describe('Edit an red-flag\'s location with another user id', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}red-flag/location/${redFlag.id}`)
       .send({ location: '9.345 6.3566' })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.ODQ3MWU0ODMtZjQ0Mi00MzVmLTlmMGYtZjBhZjcyMzk0MmE5.GTm5h0NgtKv2SBLqAIu575VeYkfB0rOXhBRI5lm-Wrg' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(401);
         await expect(typeof (response.body)).to.equal('object');
@@ -1116,7 +1186,7 @@ describe('Update an incident status without status', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: '', id: 'nothing' })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(400);
         await expect(typeof (response.body)).to.equal('object');
@@ -1130,7 +1200,7 @@ describe('Update an incident status without incident id', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'ready', id: '' })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(400);
         await expect(typeof (response.body)).to.equal('object');
@@ -1158,7 +1228,7 @@ describe('Update an incident status, changing it to draft', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'draft', id: redFlag.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(400);
         await expect(typeof (response.body)).to.equal('object');
@@ -1172,7 +1242,7 @@ describe('Update an incident status to an unrecognized status', () => {
   it('Should return an error', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'ready', id: redFlag.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(400);
         await expect(typeof (response.body)).to.equal('object');
@@ -1186,7 +1256,7 @@ describe('Update a red-flag status to under-investigation', () => {
   it('Should return updated red-flag', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'under-investigation', id: redFlag.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -1201,7 +1271,7 @@ describe('Update a red-flag status to resolved', () => {
   it('Should return updated red-flag', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'resolved', id: redFlag.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -1216,7 +1286,7 @@ describe('Update a red-flag status to rejected', () => {
   it('Should return updated red-flag', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'rejected', id: redFlag.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -1231,7 +1301,7 @@ describe('Update an intervention status to under-investigation', () => {
   it('Should return updated intervention', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'under-investigation', id: intervention.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -1246,7 +1316,7 @@ describe('Update an intervention status to resolved', () => {
   it('Should return updated intervention', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'resolved', id: intervention.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -1261,7 +1331,7 @@ describe('Update an intervention status to rejected', () => {
   it('Should return updated intervention', (done) => {
     request.patch(`${apiVersionTwo}update/status`)
       .send({ status: 'rejected', id: intervention.id })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
@@ -1482,7 +1552,7 @@ describe('Delete an incident as an admin', () => {
     const { id, type } = newRedFlag;
     request.delete(`${apiVersionTwo}incident/delete`)
       .send({ id, type })
-      .set({ 'x-auth': 'eyJhbGciOiJIUzI1NiJ9.NGJlYzVlNDAtZGVmNy00MzIwLTljYjItYjVkOWU5OWQzNGY0.5w3MuYnzFikbK_eplB9g_aZ25wZSdhBh-aGaXh6LSzk' })
+      .set({ 'x-auth': admin.token })
       .end(async (error, response) => {
         await expect(response.body.status).to.equal(403);
         await expect(typeof (response.body)).to.equal('object');
