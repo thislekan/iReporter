@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const pg = require('pg');
 const uuid = require('uuid/v4');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const password = require('../config/password');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
