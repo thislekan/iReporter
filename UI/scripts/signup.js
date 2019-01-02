@@ -54,7 +54,10 @@ signUpButton.addEventListener('click', () => {
   fetch(`${apiVersion}user/create`, options)
     .then(handleResponse)
     .then(res => console.log(res))
-    .catch(err => console.log(err));
+    .catch(err => {
+      notificationTextElement.innerText = err.message;
+      console.log(err)
+    });
   // lastNameInput.value = '';
   // passwordInput.value = '';
   // passwordInputCheck.value = '';
