@@ -1,5 +1,39 @@
 language: node_js
 node_js:
   - "stable"
+services:
+  - "Postgresql"
+before_script:
+  - psql -c 'create database ireporter;' -U postgres
+  - psql -c 'CREATE TABLE IF NOT EXISTS
+  users(
+    id UUID PRIMARY KEY NOT NULL,
+    email VARCHAR(25) NOT NULL UNIQUE,
+    password VARCHAR(225) NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "otherNames" TEXT,
+    "isAdmin" BOOLEAN default FALSE,
+    "phoneNumber" INT,
+    "userName" VARCHAR(10)
+  );' -U postgres
+  - psql -c 'CREATE TABLE IF NOT EXISTS
+  Incidents(
+    id UUID PRIMARY KEY NOT NULL,
+    "createdBy" UUID NOT NULL,
+    "createdOn" BIGINT NOT NULL,
+    creator TEXT,
+    "updatedOn" BIGINT,
+    title VARCHAR(75) NOT NULL,
+    type TEXT NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    status TEXT DEFAULT 'draft',
+    comment TEXT,
+    Images TEXT[],
+    Videos TEXT[],
+    FOREIGN KEY ("createdBy") REFERENCES users (id) ON DELETE CASCADE
+  );' -U postgres
+  - psql -c 'INSERT INTO
+    Users(id = "3a579fe2-fa41-43c2-970d-b73910183d92", email = "admin@email.com", "lastName" = "Admin", "firstName" = "User", password="$2a$10$PJUKT.625cmXgkdHApXvIexgqjrcf1rfe2XvthUSOUd3Vvh/rVvTu", "isAdmin" = true);' -U postgres
 after_success:
   - npm run coverage

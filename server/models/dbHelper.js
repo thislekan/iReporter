@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 import pg from 'pg';
+import dotEnv from '../config/config';
 
-const connectionString = process.env.DATABASE_URL || 'postgres://thislekan:123phoe5@localhost:5432/ireporter';
+const connectionString = process.env.DATABASE_URL || dotEnv.DATABASE_URL;
 
-const client = new pg.Client(connectionString);
+const client = new pg.Pool({ connectionString });
 client.connect(() => console.log('welcome to db'));
 
 export default {

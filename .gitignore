@@ -6,3 +6,7 @@ config/
 .env
 .nyc_output
 .coveralls.yml
+.env
+config/
+DOC.html
+DOC.apib
