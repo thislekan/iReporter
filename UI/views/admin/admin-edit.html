@@ -1,0 +1,98 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> iReoprter || Admin-Edit </title>
+  <link rel="stylesheet" href="../../styles/admin-edit.css">
+</head>
+
+<body>
+  <header>
+    <nav>
+      <div class="navigation__wrapper">
+        <div><a href="admin-dashboard.html">Dashboard</a></div>
+        <div><button id="log-out">Log Out</button></div>
+      </div>
+    </nav>
+  </header>
+  <div id="body">
+    <div class="padded-body">
+      <p id="welcome-text">Edit reports</p>
+      <div class="notification">
+        <div class="notification__body">
+          <div class="close-notification">
+            <span>x</span>
+          </div>
+          <p></p>
+        </div>
+      </div>
+      <div class="body__content">
+        <div class="edit__content">
+          <div class="edit__body">
+            <div class="edit__body__wrapper">
+              <div class="report-details">
+                <h4>Creator ID: </h4>
+                <p>90078</p>
+              </div>
+              <div class="report-details">
+                <h4>ID: </h4>
+                <p>09234</p>
+              </div>
+              <div class="report-details">
+                <h4>Type: </h4>
+                <p>Red Flag <span class="fa fa-flag"></span></p>
+              </div>
+              <div class="report-details">
+                <h4>Status: </h4>
+                <select name="" id="">
+                  <option value="draft">Draft</option>
+                  <option value="under-investigation">Under Investigation</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="resolced">Resolved</option>
+
+                </select>
+              </div>
+              <div class="location-div">
+                <div class="report-details">
+                  <h4>Location: </h4>
+                  <p>Address or Coordinates</p>
+                </div>
+                <div class="display-btn-div">
+                  <button class="view-map-btn view-btns">View Map</button>
+                  <button class="view-images-btn view-btns">View Images</button>
+                  <button class="view-comments-btn view-btns">View Comments</button>
+                  <button class="view-videos-btn view-btns">View Videos</button>
+                </div>
+                <div class="map" id="map-div">
+                  <div class="map-region">map region</div>
+                </div>
+              </div>
+              <div class="comment-div" id="comment-div">
+                <textarea name="" id=""></textarea>
+              </div>
+              <div class="image-and-video-div">
+                <h4>Images or Videos: </h4>
+                <div class="content-wrapper">
+                  <!-- multiple images here -->
+                  <div class="image-container" id="image-container">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                  </div>
+                </div>
+              </div>
+              <div class="btn-div btn-select">
+                <button id="edit-btn" class="action-btns">Edit Incident</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

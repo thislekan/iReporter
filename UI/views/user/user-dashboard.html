@@ -1,0 +1,233 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> iReporter || User-Dashboard </title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../styles/user-dashboard.css">
+</head>
+
+<body>
+  <header>
+    <nav>
+      <div class="navigation__wrapper">
+        <div><a href="profile.html">Profile</a></div>
+        <div><a href="view-reports.html">View Reports</a></div>
+        <div><button id="log-out">Log Out</button></div>
+      </div>
+    </nav>
+  </header>
+  <div id="body">
+    <div class="padded-body">
+      <p id="welcome-text">Welcome to your Dashboard</p>
+      <div class="notification">
+        <div class="notification__body">
+          <div class="close-notification">
+            <span>x</span>
+          </div>
+          <p></p>
+        </div>
+      </div>
+      <div class="body__content">
+        <div class="create-and-edit">
+          <div class="create">
+            <h2>Report an incident</h2>
+            <div class="create-content">
+              <div class="input-div">
+                <label for="type">Select type of report</label>
+                <select name="type" id="report-type">
+                  <option value="">Please select your report type</option>
+                  <option value="red-flage">Red Flag</option>
+                  <option value="intervention">Intervention</option>
+                </select>
+              </div>
+              <div class="input-div for-text">
+                <label for="comments">Enter comments</label>
+                <textarea name="comments" id="comments"></textarea>
+              </div>
+              <div class="input-div">
+                <label for="location">Enter Location or Coordinates</label>
+                <input type="text" name="location" id="location">
+              </div>
+              <div class="input-div">
+                <label for="image or video">Upload Image or Video</label>
+                <input type="file" name="image or video" id="file-upload" multiple accept="image/*, video/*">
+              </div>
+              <div class="btn-div">
+                <button>Create</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="recently-created">
+          <h2>Recently created reports</h2>
+          <div class="list-of-reports">
+            <div class="report-body-wrapper">
+              <div class="report-details">
+                <h4>ID: </h4>
+                <p>09234</p>
+              </div>
+              <div class="report-details">
+                <h4>Type: </h4>
+                <p>Red Flag <span class="fa fa-flag"></span></p>
+              </div>
+              <div class="report-details">
+                <h4>Created: </h4>
+                <p>23/12/2018</p>
+              </div>
+              <div class="report-details">
+                <h4>Status: </h4>
+                <p>Pending</p>
+              </div>
+              <div class="location-div">
+                <div class="report-details">
+                  <h4>Location: </h4>
+                  <p>Address or Coordinates</p>
+                </div>
+                <div class="display-btn-div">
+                  <button class="view-map-btn view-btns">View Map</button>
+                  <button class="view-images-btn view-btns">View Images</button>
+                  <button class="view-comments-btn view-btns">View Comments</button>
+                  <button class="view-videos-btn view-btns">View Videos</button>
+                </div>
+                <div class="map">
+                  <div class="map-region">map region</div>
+                </div>
+                <div class="comment-div">
+                  <textarea name="" id=""></textarea>
+                </div>
+              </div>
+              <div class="image-and-video-div">
+                <h4>Images or Videos: </h4>
+                <div class="content-wrapper">
+                  <div class="image-container">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                  </div>
+                </div>
+              </div>
+              <div class="action-btns-div">
+                <button class="action-btns edit-btn">Edit Incident</button>
+                <button class="action-btns delete-btn">Delete Incident</button>
+              </div>
+            </div>
+            <div class="report-body-wrapper">
+              <div class="report-details">
+                <h4>ID: </h4>
+                <p>09234</p>
+              </div>
+              <div class="report-details">
+                <h4>Type: </h4>
+                <p>Red Flag <span class="fa fa-flag"></span></p>
+              </div>
+              <div class="report-details">
+                <h4>Created: </h4>
+                <p>23/12/2018</p>
+              </div>
+              <div class="report-details">
+                <h4>Status: </h4>
+                <p>Pending</p>
+              </div>
+              <div class="location-div">
+                <div class="report-details">
+                  <h4>Location: </h4>
+                  <p>Address or Coordinates</p>
+                </div>
+                <div class="display-btn-div">
+                  <button class="view-map-btn view-btns">View Map</button>
+                  <button class="view-images-btn view-btns">View Images</button>
+                  <button class="view-comments-btn view-btns">View Comments</button>
+                  <button class="view-videos-btn view-btns">View Videos</button>
+                </div>
+                <div class="map">
+                  <div class="map-region">map region</div>
+                </div>
+                <div class="comment-div">
+                  <textarea name="" id=""></textarea>
+                </div>
+              </div>
+              <div class="image-and-video-div">
+                <h4>Images or Videos: </h4>
+                <div class="content-wrapper">
+                  <div class="image-container">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                  </div>
+                </div>
+              </div>
+              <div class="action-btns-div">
+                <button class="action-btns edit-btn">Edit Incident</button>
+                <button class="action-btns delete-btn">Delete Incident</button>
+              </div>
+            </div>
+            <div class="report-body-wrapper">
+              <div class="report-details">
+                <h4>ID: </h4>
+                <p>09234</p>
+              </div>
+              <div class="report-details">
+                <h4>Type: </h4>
+                <p>Red Flag <span class="fa fa-flag"></span></p>
+              </div>
+              <div class="report-details">
+                <h4>Created: </h4>
+                <p>23/12/2018</p>
+              </div>
+              <div class="report-details">
+                <h4>Status: </h4>
+                <p>Pending</p>
+              </div>
+              <div class="location-div">
+                <div class="report-details">
+                  <h4>Location: </h4>
+                  <p>Address or Coordinates</p>
+                </div>
+                <div class="display-btn-div">
+                  <button class="view-map-btn view-btns">View Map</button>
+                  <button class="view-images-btn view-btns">View Images</button>
+                  <button class="view-comments-btn view-btns">View Comments</button>
+                  <button class="view-videos-btn view-btns">View Videos</button>
+                </div>
+                <div class="map">
+                  <div class="map-region">map region</div>
+                </div>
+                <div class="comment-div">
+                  <textarea name="" id=""></textarea>
+                </div>
+              </div>
+              <div class="image-and-video-div">
+                <h4>Images or Videos: </h4>
+                <div class="content-wrapper">
+                  <div class="image-container">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                    <img src="../../images/quiet.jpg" alt="">
+                  </div>
+                </div>
+              </div>
+              <div class="action-btns-div">
+                <button class="action-btns edit-btn">Edit Incident</button>
+                <button class="action-btns delete-btn">Delete Incident</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div>
+        <iframe width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/search?q=boundary+market+lagos&key="
+            allowfullscreen></iframe>
+    </div> -->
+  <script src="../../scripts/user-dashboard.js"></script>
+</body>
+
+</html>
