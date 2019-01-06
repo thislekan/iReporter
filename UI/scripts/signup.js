@@ -8,6 +8,7 @@ const agreeToTermsInput = document.getElementById('terms-check');
 const notificationBox = document.getElementById('notification-div');
 const notificationBoxCloser = document.getElementById('close-notification');
 const notificationTextElement = notificationBox.querySelector('p');
+const notificationTitle = notificationBox.querySelector('h5');
 
 const signUpButton = document.getElementById('signup-btn');
 
@@ -19,6 +20,14 @@ function displayNotification() {
   notificationBox.style.display = 'flex';
 }
 
+function emptyInputFields() {
+  lastNameInput.value = '';
+  passwordInput.value = '';
+  passwordInputCheck.value = '';
+  firstNameInput.value = '';
+  emailInput.value = '';
+}
+
 function verifyRequiredFields() {
   const firstName = firstNameInput.value.trim();
   const lastName = lastNameInput.value.trim();
@@ -28,6 +37,10 @@ function verifyRequiredFields() {
 
   if (!lastName || !email || !password || !passwordCheck || !firstName) {
     notificationTextElement.innerText = 'All fields are required. Please fill them all.'
+    return displayNotification();
+  }
+  if (!/^.+@.+\..+$/.test(email)) {
+    notificationTextElement.innerText = 'The email is invalid. Please enter a valid email';
     return displayNotification();
   }
   if (password.length <= 5 || passwordCheck.length <= 5) {
@@ -43,7 +56,6 @@ function verifyRequiredFields() {
 
 signUpButton.addEventListener('click', () => {
   const { lastName, firstName, email, password } = verifyRequiredFields();
-  console.log(lastName, firstName, email, password)
   const options = {
     method: 'POST',
     body: JSON.stringify({ lastName, firstName, password, email }),
@@ -53,14 +65,22 @@ signUpButton.addEventListener('click', () => {
   }
   fetch(`${apiVersion}user/create`, options)
     .then(handleResponse)
-    .then(res => console.log(res))
+    .then(res => {
+      const { user, token } = res.data;
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('firstName', `${user.firstName}`);
+      notificationTitle.innerText = 'User successfully created.'
+      notificationTextElement.innerText = `You'll be redirected to your home page shortly.`;
+      displayNotification();
+      emptyInputFields();
+      setTimeout(() => {
+        location.href = '../views/user/user-dashboard.html';
+      }, 2000);
+    })
     .catch(err => {
-      notificationTextElement.innerText = err.message;
-      console.log(err)
+      const endpointError = err.error;
+      notificationTitle.innerText = 'An error has occured.';
+      notificationTextElement.innerText = endpointError.error;
+      return displayNotification();
     });
-  // lastNameInput.value = '';
-  // passwordInput.value = '';
-  // passwordInputCheck.value = '';
-  // firstNameInput.value = '';
-  // emailInput.value = '';
 });

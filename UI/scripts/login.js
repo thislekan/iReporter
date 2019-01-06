@@ -4,6 +4,7 @@ const passwordInput = document.getElementById('password');
 const notificationBox = document.getElementById('notification-div');
 const notificationBoxCloser = document.getElementById('close-notification');
 const notificationTextElement = notificationBox.querySelector('p');
+const notificationTitle = notificationBox.querySelector('h5');
 
 const loginButton = document.getElementById('login-btn');
 
@@ -20,35 +21,56 @@ function verifyRequiredFields() {
   const password = passwordInput.value.trim();
 
   if (!email || !password) {
+    notificationTitle.innerText = 'An error has occured';
     notificationTextElement.innerText = 'All fields are required. Please fill them all.'
-    displayNotification();
-  } else if (email === 'admin' && password === 'admin') {
-    return { email, password };
-  } else {
-    if (password.length <= 5) {
-      notificationTextElement.innerText = 'Password needs to be at least 6 characters long.'
-      displayNotification()
-    } else {
-      emailInput.value = '';
-      passwordInput.value = '';
-      return { email, password }
-    }
+    return displayNotification();
   }
+
+  if (!/^.+@.+\..+$/.test(email)) {
+    notificationTitle.innerText = 'An error has occured';
+    notificationTextElement.innerText = 'The email is invalid. Please enter a valid email';
+    return displayNotification();
+  }
+
+  if (password.length <= 5) {
+    notificationTitle.innerText = 'An error has occured';
+    notificationTextElement.innerText = 'Password needs to be at least 6 characters long.'
+    return displayNotification()
+  }
+  return { email, password }
 }
 
 loginButton.addEventListener('click', () => {
-  const emailInMemory = sessionStorage.getItem('email');
-  const passwordInMemory = sessionStorage.getItem('password');
   const { email = '', password = '' } = verifyRequiredFields();
-  if (email === emailInMemory || password === passwordInMemory) {
-    return location.href = '../views/user/user-dashboard.html';
-  } else if (email === 'admin' && password === 'admin') {
-    return location.href = '../views/admin/admin-dashboard.html';
-    // setTimeout(() => {
-    //   location.href = '../views/admin/admin-dashboard.html';
-    // }, 1000);
-  } else {
-    displayNotification();
-    notificationTextElement.innerText = 'User not found. Please sign up.'
+  const options = {
+    method: 'POST',
+    body: JSON.stringify({ password, email }),
+    headers: {
+      'Content-Type': 'application/json',
+    }
   }
+
+  fetch(`${apiVersion}user/login`, options)
+    .then(handleResponse)
+    .then(res => {
+      const { user, token } = res.data;
+      sessionStorage.setItem('userId', user.id);
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('firstName', user.firstName);
+      notificationTitle.innerText = 'User successfully logged in.';
+      notificationTextElement.innerText = `You'll be redirected to your homepage shortly.`;
+      displayNotification();
+      emailInput.value = '';
+      passwordInput.value = '';
+      setTimeout(() => {
+        if (user.isAdmin) return location.href = '../views/admin/admin-dsahboard.html';
+        location.href = '../views/user/user-dashboard.html'
+      }, 2000);
+    })
+    .catch(err => {
+      const endpointError = err.error;
+      notificationTitle.innerText = 'An error has occured.';
+      notificationTextElement.innerText = endpointError.error;
+      return displayNotification();
+    })
 });

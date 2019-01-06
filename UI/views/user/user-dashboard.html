@@ -24,10 +24,11 @@
     <div class="padded-body">
       <p id="welcome-text">Welcome to your Dashboard</p>
       <div class="notification">
-        <div class="notification__body">
-          <div class="close-notification">
+        <div class="notification__body" id="notification-div">
+          <div class="close-notification" id="close-notification">
             <span>x</span>
           </div>
+          <h3></h3>
           <p></p>
         </div>
       </div>
@@ -40,9 +41,13 @@
                 <label for="type">Select type of report</label>
                 <select name="type" id="report-type">
                   <option value="">Please select your report type</option>
-                  <option value="red-flage">Red Flag</option>
+                  <option value="red-flag">Red Flag</option>
                   <option value="intervention">Intervention</option>
                 </select>
+              </div>
+              <div class="input-div">
+                <label for="title">Title</label>
+                <input type="text" name="title" id="incident-title">
               </div>
               <div class="input-div for-text">
                 <label for="comments">Enter comments</label>
@@ -57,7 +62,7 @@
                 <input type="file" name="image or video" id="file-upload" multiple accept="image/*, video/*">
               </div>
               <div class="btn-div">
-                <button>Create</button>
+                <button id="create-incident">Create</button>
               </div>
             </div>
           </div>
@@ -227,6 +232,7 @@
         <iframe width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/search?q=boundary+market+lagos&key="
             allowfullscreen></iframe>
     </div> -->
+  <script src="../../scripts/utils.js"></script>
   <script src="../../scripts/user-dashboard.js"></script>
 </body>
 
