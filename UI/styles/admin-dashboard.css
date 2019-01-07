@@ -118,40 +118,8 @@ h4{
 }
 .report-details p{
     margin: .5rem 0;
-}
-.display-btn-div{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.view-btns{
-    height: 3rem;
-    border-radius: .25rem;
-    margin: 1rem 0;
-    font-size: 1.2rem;
-    outline: none;
-    padding: 0 1.5rem;
-}
-.view-map-btn{
-    background: #23948c;
-    border: 1px solid #23948c;
-    color: black;
-}
-.view-images-btn{
-    background: #117d5a;
-    border: 1px solid #117d5a;
-    color: white;
-}
-.view-comments-btn{
-    background: #f2b21c;
-    border: 1px solid #f2b21c;
-    color: black;
-}
-.view-videos-btn{
-    background: #1d394a;
-    border: 1px solid #1d394a;
-    color: white;
+    margin-left: 1.5rem;
+    text-align: right;
 }
 .map-region{
     height: 20rem;
@@ -285,16 +253,8 @@ label{
     font-weight: 500;
     color: #1d394a;
 }
-.edit-btn-div{
-        margin: 2rem 0;
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    border: 1px solid rgba(29, 57, 74, 0.1);
-    padding: 0 .5rem;
-    box-shadow: 2px 2px 1px -3px rgba(29,57,74,0.1);
-    border-radius: .25rem;
+.btn-div{
+    text-align: right;
 }
 .edit-btn{
     height: 3rem;
@@ -303,6 +263,7 @@ label{
     color: white;
     border: 1px solid #117d5a;
     border-radius: .25rem;
+    margin: .5rem 0;
 }
 .comment-div{
     margin: 1rem 0;
@@ -330,17 +291,10 @@ textarea{
     .map-region{
         height: 11rem;
     }
-    #red-flag-list, #intervention-list{
+    .list-of-reports{
         display: grid;
         grid-template-columns: 1fr 1fr;
-        grid-gap: 1rem;
-    }
-    .display-btn-div{
-        display: flex;
-        flex-wrap: wrap;
-        width: 100%;
-        align-items: center;
-        justify-content: space-evenly; 
+        grid-gap: .5rem 1rem;
     }
 }
 @media only screen and (min-device-width: 900px){

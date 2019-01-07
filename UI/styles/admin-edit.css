@@ -100,63 +100,9 @@ h4{
 .report-details p{
     margin: .5rem 0;
 }
-.display-btn-div{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.view-btns{
-    height: 3rem;
-    border-radius: .25rem;
-    margin: 1rem 0;
-    font-size: 1.2rem;
-    outline: none;
-    padding: 0 1.5rem;
-}
-.view-map-btn{
-    background: #23948c;
-    border: 1px solid #23948c;
-    color: black;
-}
-.view-images-btn{
-    background: #117d5a;
-    border: 1px solid #117d5a;
-    color: white;
-}
-.view-comments-btn{
-    background: #f2b21c;
-    border: 1px solid #f2b21c;
-    color: black;
-}
-.view-videos-btn{
-    background: #1d394a;
-    border: 1px solid #1d394a;
-    color: white;
-}
-.map-region{
-    height: 20rem;
-    /* border: 1px solid; */
-    position: relative;
-    display: none;
-}
 .content-wrapper{
     height: 30rem;
     margin: 1rem 0;
-}
-.image-container{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.image-container img{
-    height: 14.5rem;
-    width: 100%;
-    object-fit: cover;
-    object-position: center;
-    border: 1px solid rgba(29, 57, 74, 0.35);
-    border-radius: .25rem;
 }
 .btn-div select{
     height: 3rem;
@@ -227,12 +173,6 @@ textarea{
     .edit__content{
         padding: 0 15rem;
     }
-    .image-container img{
-        height: 12rem;
-    }
-    .map-region{
-        height: 11rem;
-    }
     .display-btn-div{
         display: flex;
         flex-wrap: wrap;
@@ -250,8 +190,5 @@ textarea{
     }
     .content-wrapper{
         height: 45rem;
-    }
-    .image-container img{
-        height: 22rem;
     }
 }
