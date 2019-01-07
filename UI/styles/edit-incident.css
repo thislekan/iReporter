@@ -29,13 +29,16 @@ nav{
     padding: 3.5rem 1rem;
     position: relative;
 }
-.notification{
+.notification__body{
     position: fixed;
+    text-align: center;
+    padding: 1rem;
     height: 25rem;
-    width: calc(100% - 2rem);
+    width: calc(100% - 4rem);
     z-index: 2;
     background: white;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     top: calc(50% - 12.5rem);
@@ -44,7 +47,7 @@ nav{
     border: 1px solid #cf4241;
     display: none;
 }
-.notification__body{
+.close-notification{
     height: 2.5rem;
     width: 2.5rem;
     font-size: 1.5rem;
@@ -89,7 +92,7 @@ nav{
     border-radius: .25rem;
     margin: 1rem 0;
 }
-select, input{
+select{
     height: 3rem;
     border: 1px solid rgba(29, 57, 74, 0.1);
     background-color: rgba(29, 57, 74, 0.1);
@@ -97,6 +100,10 @@ select, input{
     outline: none;
     color: #0c0000;
     padding: .5rem 1rem;
+}
+#incident-id{
+    margin-left: 1rem;
+    text-align: right;
 }
 h4{
     color: #1d394a;
@@ -113,69 +120,14 @@ h4{
 .report-details p{
     margin: .5rem 0;
 }
-.display-btn-div{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.view-btns{
-    height: 3rem;
-    border-radius: .25rem;
-    margin: 1rem 0;
-    font-size: 1.2rem;
-    outline: none;
-    padding: 0 1.5rem;
-}
-.view-map-btn{
-    background: #23948c;
-    border: 1px solid #23948c;
-    color: black;
-}
-.view-images-btn{
-    background: #117d5a;
-    border: 1px solid #117d5a;
-    color: white;
-}
-.view-comments-btn{
-    background: #f2b21c;
-    border: 1px solid #f2b21c;
-    color: black;
-}
-.view-videos-btn{
-    background: #1d394a;
-    border: 1px solid #1d394a;
-    color: white;
-}
-.map-region{
-    height: 20rem;
-    /* border: 1px solid; */
-    position: relative;
-    display: none;
-}
-.content-wrapper{
-    height: 30rem;
-    margin: 1rem 0;
-}
-.image-container{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.image-container img{
-    height: 14.5rem;
-    width: 100%;
-    object-fit: cover;
-    object-position: center;
-    border: 1px solid rgba(29, 57, 74, 0.35);
-    border-radius: .25rem;
-}
 .fa{
     margin-left: 1rem;
 }
 .fa-flag{
     color: #cf4241;
+}
+.fa-stop-circle-o{
+    color: #23948c;
 }
 .comment-div{
     margin: 1rem 0;
@@ -215,6 +167,9 @@ textarea{
     color: white;
     border: 1px solid #1d394a;
 }
+.close-notification .fa{
+    margin: unset;
+}
 @media screen and (min-device-width: 700px){
     .padded-body{
         padding: 3.5rem 15rem;
@@ -235,6 +190,9 @@ textarea{
         align-items: center;
         justify-content: space-evenly; 
     }
+    .notification__body{
+        width: calc(100% - 32rem);
+    }
 }
 @media screen and (min-device-width: 900px){
     .padded-body{
@@ -245,5 +203,8 @@ textarea{
     }
     .image-container img{
         height: 22rem;
+    }
+    .notification__body{
+        width: calc(100% - 52rem);
     }
 }
