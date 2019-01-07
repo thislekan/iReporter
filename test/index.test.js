@@ -14,6 +14,8 @@ const user = {
   lastname: 'User',
   othernames: 'Gbeborun',
   phoneNumber: '0908909890',
+  email: 'testuser@email.com',
+  password: 'test_user_419',
   isAdmin: false,
 };
 
