@@ -1,3 +1,4 @@
+/* eslint-disable */
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 
@@ -65,7 +66,7 @@ loginButton.addEventListener('click', () => {
       setTimeout(() => {
         if (user.isAdmin) return location.href = '../views/admin/admin-dsahboard.html';
         location.href = '../views/user/user-dashboard.html'
-      }, 2000);
+      }, 2500);
     })
     .catch(err => {
       const endpointError = err.error;
