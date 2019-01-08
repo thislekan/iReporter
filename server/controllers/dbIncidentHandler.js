@@ -102,11 +102,18 @@ export default {
     }
   },
   getSingleIncident: async (req, res) => {
-    const { userid } = res.locals;
+    let text;
+    let values;
+    const { userid, level } = res.locals;
     const { id } = req.params;
-    const text = 'SELECT * FROM incidents where id = $1 AND "createdBy" = $2';
-    const values = [id, userid];
-
+    if (level === 'admin') {
+      text = 'SELECT * FROM incidents where id = $1';
+      values = [id];
+    }
+    if (level === 'user') {
+      text = 'SELECT * FROM incidents where id = $1 AND "createdBy" = $2';
+      values = [id, userid];
+    }
     try {
       const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) {

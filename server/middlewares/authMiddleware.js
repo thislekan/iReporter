@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import userMiddleware from './userMiddleware';
 
 export default {
   hashPassword: (req, res, next) => {
@@ -26,7 +27,7 @@ export default {
       })
       .catch(error => res.status(400).send({ status: 400, error }));
   },
-  validateToken: (req, res, next) => {
+  validateToken: async (req, res, next) => {
     const token = req.headers['x-auth'];
     if (!token.trim()) {
       return res.status(400).send({
@@ -36,6 +37,9 @@ export default {
     }
     try {
       const decoded = jwt.verify(token.trim(), process.env.JWT_SECRET);
+      const user = await userMiddleware.findUser(decoded);
+      if (user.isAdmin) res.locals.level = 'admin';
+      if (!user.isAdmin) res.locals.level = 'user';
       res.locals.userid = decoded;
     } catch (error) {
       return res.status(400).send({ status: 400, error: 'Token is invalid' });
