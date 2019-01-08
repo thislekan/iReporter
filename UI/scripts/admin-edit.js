@@ -6,7 +6,20 @@ const incidentId = document.getElementById('incident-id');
 const incidentStatus = document.getElementById('incident-status');
 const incidentDate = document.getElementById('incident-date');
 
+const notificationBox = document.getElementById('notification-div');
+const notificationBoxCloser = document.getElementById('close-notification');
+const notificationTextElement = notificationBox.querySelector('p');
+const notificationTitle = notificationBox.querySelector('h3');
+
 const editIncidentBtn = document.getElementById('edit-btn');
+
+notificationBoxCloser.addEventListener('click', () => {
+  notificationBox.style.display = 'none';
+});
+
+function displayNotification() {
+  notificationBox.style.display = 'flex';
+}
 
 function updateIncidentStatus() {
   const status = incidentStatus.value.trim();
@@ -24,10 +37,16 @@ function updateIncidentStatus() {
     .then(handleResponse)
     .then(res => {
       console.log(res);
+      notificationTitle.innerText = 'Report successfully updated';
+      displayNotification();
       incidentStatus.disabled = true;
       editIncidentBtn.innerText = 'Edit Status';
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      notificationTitle.innerText = 'An erroroccured';
+      notificationTextElement.innerText = err.error.error;
+      displayNotification();
+    })
 }
 
 editIncidentBtn.addEventListener('click', (e) => {
@@ -37,11 +56,21 @@ editIncidentBtn.addEventListener('click', (e) => {
     incidentStatus.disabled = false;
     e.target.innerText = 'Post Status'
   }
-})
+});
+
+function updateView(params) {
+  const { title, status, comment, location, type, createdOn, id } = params;
+  incidentComment.value = comment;
+  incidentTitle.innerText = title;
+  incidentDate.innerText = moment(Number(createdOn)).format('MMMM Do YYYY, h:mm:ss a');
+  incidentLocation.innerText = location;
+  incidentStatus.value = status;
+  incidentType.innerText = type;
+  incidentId.innerText = id;
+}
 
 window.onload = () => {
   const id = sessionStorage.getItem('incident');
-  console.log(sessionStorage.getItem('token'));
   const options = {
     method: 'GET',
     headers: {
@@ -54,6 +83,11 @@ window.onload = () => {
     .then(handleResponse)
     .then(res => {
       console.log(res);
+      updateView(res.data);
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      notificationTitle.innerText = 'An erroroccured';
+      notificationTextElement.innerText = err.error.error;
+      displayNotification();
+    });
 }

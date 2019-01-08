@@ -38,13 +38,16 @@ nav{
     text-align: center;
     color: #117d5a;
 }
-.notification{
+.notification__body{
     position: fixed;
+    text-align: center;
+    padding: 1rem;
     height: 25rem;
-    width: calc(100% - 2rem);
+    width: calc(100% - 4rem);
     z-index: 2;
     background: white;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     top: calc(50% - 12.5rem);
@@ -53,7 +56,7 @@ nav{
     border: 1px solid #cf4241;
     display: none;
 }
-.notification__body{
+.close-notification{
     height: 2.5rem;
     width: 2.5rem;
     font-size: 1.5rem;
@@ -99,6 +102,8 @@ h4{
 }
 .report-details p{
     margin: .5rem 0;
+    margin-left: 1.5rem;
+    text-align: right;
 }
 .content-wrapper{
     height: 30rem;
