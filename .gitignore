@@ -8,3 +8,4 @@ config/config.js
 config/
 DOC.html
 DOC.apib
+*publicKey.js

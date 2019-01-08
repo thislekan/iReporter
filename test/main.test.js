@@ -658,6 +658,7 @@ describe('Get single incident from User without record', () => {
     request.get(`${apiVersionTwo}incident/${intervention.id}`)
       .set({ 'x-auth': randomUser.token })
       .end(async (error, response) => {
+        // console.log(response.body);
         await expect(response.body.status).to.equal(404);
         await expect(typeof (response.body)).to.equal('object');
         await expect(response.body.error).to.equal('The record you requested for does not exist');
@@ -687,6 +688,19 @@ describe('Get a red-flag incident from a User', () => {
         await expect(response.body.status).to.equal(200);
         await expect(typeof (response.body)).to.equal('object');
         await expect(response.body.data.createdBy).to.equal(user.id);
+        done();
+      });
+  });
+});
+
+describe('Get a red-flag incident from a User as an Admin', () => {
+  it('Should return the intervention incident', (done) => {
+    request.get(`${apiVersionTwo}incident/${redFlag.id}`)
+      .set({ 'x-auth': admin.token })
+      .end(async (error, response) => {
+        await expect(response.body.status).to.equal(200);
+        await expect(typeof (response.body)).to.equal('object');
+        await expect(response.body.data.id).to.equal(redFlag.id);
         done();
       });
   });
