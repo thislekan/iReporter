@@ -6,18 +6,17 @@ const errorMessage = (res, status, message) => {
   });
 };
 
-function fileCheck(res, files) {
-  files.forEach((element) => {
-    if (!element.mimetype.includes('video') && !element.mimetype.includes('image')) {
-      errorMessage(res, 400, `${element.mimetype} format not supported.`);
-    }
-  });
-}
+// function fileCheck(res, files) {
+//   files.forEach((element) => {
+//     if (!element.mimetype.includes('video') && !element.mimetype.includes('image')) {
+//       return errorMessage(res, 400, `${element.mimetype} format not supported.`);
+//     }
+//   });
+// }
 
 export default {
   returnedFiles: (req, res, next) => {
-    if (!req.files && !req.files[0]) return next();
-    if (req.files.length) return fileCheck(res, req.files);
+    if (!req.files.length) return next();
     const imageUrl = [];
     const videoUrl = [];
     req.files.forEach((element) => {
