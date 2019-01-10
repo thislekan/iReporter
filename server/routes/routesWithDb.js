@@ -23,7 +23,13 @@ cloudinary.config({
 const storage = cloudinaryStorage({
   cloudinary,
   folder: 'iReporter/media',
-  allowedFormat: ['jpg', 'svg', 'png', 'jpeg', 'gif', 'avi', 'flv', 'mpeg', '3gp', 'mp4'],
+  // allowedFormats: ['jpg', 'svg', 'png', 'jpeg', 'gif', 'avi', 'flv', 'mpeg', '3gp', 'mp4'],
+  allowedFormats: (req, file, cb) => {
+    if (!file.mimetype.includes('image') && !file.mimetype.includes('vidoe')) {
+      return cb(new Error(`${file.mimetype} is not supported`));
+    }
+    return '';
+  },
 });
 
 const upload = multer({
