@@ -76,23 +76,23 @@ h2{
     margin: .5rem 0;
 }
 .report-body-wrapper{
-    padding: .5rem 1rem;
-    border: 1px solid rgba(242, 178, 28, 0.5);
     border-radius: .25rem;
-    margin: 1rem 0;
+    margin: 2.5rem 0;
     background: white;
+    box-shadow: 0px 2px 6px 0px hsla(260, 6%, 57%);
+    padding: 0 1rem;
 }
 h4{
     color: #1d394a;
     margin: 0.5rem 0;
+    margin-left: 2rem;
 }
 .report-details{
-    display: flex;
+    padding: .6rem .75rem;
+    display: grid;
+    grid-template-columns: 10rem auto;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(29, 57, 74, 0.1);
-    height: 3.5rem;
-    margin: .5rem 0;
 }
 .report-details p{
     margin: .5rem 0;
@@ -141,6 +141,7 @@ textarea {
     border-radius: .25rem;
     border: 1px solid rgba(29, 57, 74, 0.3);
     outline: none;
+    margin-top: 0.5rem;
 }
 .overlay{
     position: fixed;
@@ -175,7 +176,7 @@ textarea {
 .image-container img{
     height: 14.5rem;
     width: 100%;
-    object-fit: cover;
+    object-fit: scale-down;
     object-position: center;
     border: 1px solid rgba(29, 57, 74, 0.35);
     border-radius: .25rem;
@@ -298,6 +299,88 @@ textarea {
 .delete-btn-parent-div .delete-btn{
     box-shadow: -2px -2px 5px -5px #e9e7e7;
 }
+.bottom-div{
+    background: hsla(210, 9%, 96%, 1);
+    margin: 1rem -1rem -1.5rem;
+    border-radius: 0 0 .25rem .25rem;
+    padding: 0 1rem;
+}
+.incident-intro{
+    /* width: 7rem; */
+    display: flex;
+    align-items: center;
+}
+.incident-intro .fa{
+    margin: unset;
+}
+.fa-check{
+    height: 1.5rem;
+    width: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #117d5a;
+    color: white;
+    border-radius: 100%;
+    font-size: 1rem;
+}
+.create-modal{
+    height: 5rem;
+    width: 5rem;
+    background: #117d5a;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+}
+.create-modal img{
+    height: 3rem;
+    width: 3rem;
+}
+#create-form-div{
+    height: 100vh;
+    position: sticky;
+    /* background: hsl(291, 3%, 92%); */
+    background: white;
+    padding: 1rem;
+    top: 5.2rem;
+    width: calc(100% - 2rem);
+    overflow-y: scroll;
+    box-shadow: 0 3px 2px 0px hsla(245, 8%, 82%, 1);
+}
+.input-div{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem .5rem;
+}
+select, input{
+   height: 3rem;
+    margin: 0.5rem 0;
+    border: none;
+    background: hsl(210, 9%, 96%);
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+    outline: none;
+    color: #117d5a;
+}
+.preview-img{
+    height: 20rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-gap: 1rem;
+    padding: .5rem;
+}
+.preview-img img{
+    height: 9.5rem;
+    width: 100%;
+    object-position: center;
+    object-fit: scale-down;
+    border: 1px solid gainsboro;
+}
 @media only screen and (min-device-width: 700px){
     .content-wrapper{
         height: 25rem;
@@ -329,10 +412,13 @@ textarea {
         /* left: calc(50% - 25rem); */
         /* position: fixed; */
     }
+    .bottom-div{
+        margin: 1rem -1rem -0.5rem;
+    }
 }
 @media only screen and (min-device-width: 900px){
     .padded-body{
-        padding: 5rem 15rem;
+        padding: 5rem 10rem;
     }
     .content-wrapper{
         height: 45rem;
@@ -341,10 +427,10 @@ textarea {
         height: 22rem;
     }
     .overlay{
-        width: calc(100% - 30rem);
+        width: calc(100% - 20rem);
     }
     .delete-prompt, .notification__body{
-        width: calc(100% - 32rem);
+        width: calc(100% - 22rem);
     }
     .pushed{
         height: 127rem;

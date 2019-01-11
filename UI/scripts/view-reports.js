@@ -13,6 +13,16 @@ const incidentStatus = document.getElementById('incident-status');
 const incidentDate = document.getElementById('incident-date');
 const closeDetailedIncidentDiv = document.getElementById('close-details');
 const mapDiv = document.querySelector('.map-region');
+const incidentImageDiv = document.getElementById('incident-img-div');
+// const incidentImage = document.querySelectorAll('.incident-img');
+
+const reportTypeInput = document.getElementById('report-type');
+const titleInput = document.getElementById('create-incident-title');
+const commentInput = document.getElementById('comments');
+const locationInput = document.getElementById('location');
+const fileUploadInput = document.getElementById('file-upload');
+const previewImgDiv = document.querySelector('.preview-img');
+const createIncidentBtn = document.getElementById('create-incident');
 
 const notificationBox = document.getElementById('notification-div');
 const notificationBoxCloser = document.getElementById('close-notification');
@@ -89,7 +99,14 @@ function updateView(params) {
     const element = params[i];
     const date = dateCreated(element.createdOn);
 
-    const incident = `<div class='report-body-wrapper'><div class='report-details'><h4>ID: </h4><p>${element.id}</p></div><div class='report-details'><h4>Type: </h4><p>${(element.type === 'red-flag') ? element.type + '<span class="fa fa-flag"></span>' : element.type + "<span class='fa fa-stop-circle-o'></span>"}</p></div><div class='report-details'><h4>Date: </h4><p>${moment(date).format('MMMM Do YYYY, h:mm:ss a')}</p></div><div class='report-details'><h4>Status: </h4><p>${element.status}</p></div><div class='report-details'><h4>Location: </h4><p>${element.location}</p></div><div class='btn-div'><button class='view-btn' onclick='showIncidentDetails("${i}")'>Details</button><button class='edit-btn' onclick='navigateToEditPage("${i}")'>Edit</button><button class='delete-btn' onclick="showDeleteIncidentDiv(${i})">Delete</button></div></div>`;
+    const incident =
+      `<div class='report-body-wrapper'>
+    <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>ID: </h4></div><p>${element.id}</p></div>
+    <div class='report-details'><div class="incident-intro"><span class="fa fa-check"></span><h4>Type: </h4></div><p>${(element.type === 'red-flag') ? element.type + '<span class="fa fa-flag"></span>' : element.type + "<span class='fa fa-stop-circle-o'></span>"}</p></div>
+    <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>Date: </h4></div><p>${moment(date).format('MMMM Do YYYY, h:mm:ss a')}</p></div>
+    <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>Status: </h4></div><p>${element.status}</p></div>
+    <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>Location: </h4></div><p>${element.location}</p></div>
+    <div class='bottom-div'><div class='btn-div'><button class='view-btn' onclick='showIncidentDetails("${i}")'>Details</button><button class='edit-btn' onclick='navigateToEditPage("${i}")'>Edit</button><button class='delete-btn' onclick="showDeleteIncidentDiv(${i})">Delete</button></div></div></div>`;
 
     incidentsViewDiv.innerHTML += incident;
   }
@@ -119,7 +136,8 @@ function convertAddressToGeocode(location) {
 }
 
 function showIncidentDetails(index) {
-  const incident = filteredList[index]
+  const incident = filteredList[index];
+  console.log(incident);
   const { type, id, location, status, comment, title, createdOn } = incident;
   incidentComment.value = comment;
   incidentId.innerText = id;
@@ -128,6 +146,12 @@ function showIncidentDetails(index) {
   incidentStatus.innerText = status;
   incidentDate.innerText = moment(Number(createdOn)).format('MMMM Do YYYY, h:mm:ss a');
   incidentTitle.innerText = title;
+  incident.images.forEach(element => {
+    const imgTag = `<img src="${element}" alt='image'>`;
+    incidentImageDiv.innerHTML += imgTag;
+  });
+  // incidentImage.forEach((image, i) => image.src = incident.images[i]);
+
 
   incidentDetailsModal.style.display = 'flex';
   overlayDiv.style.display = 'flex';
@@ -147,7 +171,7 @@ function navigateToEditPage(index) {
   if (incident.status !== 'draft') {
     notificationTitle.innerText = 'An error occured';
     notificationTextElement.innerText = 'The report can not be edited.';
-    displayNotification();
+    return displayNotification();
   }
   sessionStorage.setItem('incident', incident.id);
   setTimeout(() => {
@@ -160,7 +184,7 @@ function showDeleteIncidentDiv(index) {
   if (incident.status !== 'draft') {
     notificationTitle.innerText = 'An error occured';
     notificationTextElement.innerText = 'The report can not be deleted.';
-    displayNotification();
+    return displayNotification();
   }
   sessionStorage.setItem('incident', incident.id);
   sessionStorage.setItem('type', incident.type)
@@ -208,6 +232,172 @@ deleteReportBtn.addEventListener('click', () => {
   const id = sessionStorage.getItem('incident');
   const type = sessionStorage.getItem('type');
   deleteIncident(id, type);
+});
+
+let imageArray = [];
+let videoArray = [];
+
+fileUploadInput.addEventListener('change', (event) => {
+  const allFilesReference = [...event.target.files];
+
+  const reader = new FileReader();
+  for (let i = 0; i < allFilesReference.length; i++) {
+    const element = allFilesReference[i];
+    reader.onload = () => {
+      const uploadedFiles = [...event.target.files];
+      imageArray = uploadedFiles.filter(file => file.type.includes('image'));
+      videoArray = uploadedFiles.filter(file => file.type.includes('video'));
+      const img = `<img src='${reader.result}' alt='image'>`;
+      previewImgDiv.innerHTML += img;
+      // setTimeout(() => {
+      //   console.log(result)
+      // }, 60000);
+    }
+    reader.onloadend = () => {
+      console.log('end');
+      const foo = []
+      foo.push(reader.result);
+      console.log(foo);
+    };
+    reader.readAsDataURL(element);
+  }
+
+
+  // reader.onload = function () {
+  //   if (event.target.files.length <= 4) {
+  //     blobArray.unshift(reader.result)
+  //     const uploadedFiles = [...event.target.files];
+  //     imageArray = uploadedFiles.filter(file => file.type.includes('image'));
+  //   } else {
+  //     reader.abort();
+  //     notificationTitle.innerText = 'An error has occured';
+  //     notificationTextElement.innerText = 'Maximum of 4 images allowed';
+  //     fileUploadInput.value = '';
+  //     displayNotification();
+  //   }
+  //   console.log(blobArray);
+  //   // console.log(reader.result);
+  // };
+  // allFilesReference.forEach(element => {
+  //   reader.readAsDataURL(element);
+  // });
+
+})
+
+commentInput.addEventListener('keyup', (e) => {
+  const comment = e.target.value;
+  if (comment.length < 150) {
+    commentInput.style.border = '1px solid rgba(29, 57, 74, 0.1)';
+    createIncidentBtn.disabled = false;
+  } else {
+    commentInput.style.border = '1px solid red';
+    createIncidentBtn.disabled = true;
+  }
+})
+
+function checkReportType() {
+  notificationTitle.innerText = 'An error occured';
+  notificationTextElement.innerText = 'Report type not selected.';
+  displayNotification();
+}
+
+function checkForTitle() {
+  notificationTitle.innerText = 'An error occured';
+  notificationTextElement.innerText = 'Title not provided';
+  displayNotification();
+}
+
+function checkForComment() {
+  notificationTitle.innerText = 'An error occured';
+  notificationTextElement.innerText = 'Comment not provided.';
+  displayNotification();
+}
+
+function checkForLocation() {
+  notificationTitle.innerText = 'An error occured';
+  notificationTextElement.innerText = 'Coordinates not provided.';
+  displayNotification();
+}
+
+function getLocationSuccess(position) {
+  const long = position.coords.longitude;
+  const lat = position.coords.latitude;
+
+  locationInput.value = `${lat} ${long}`;
+}
+
+function getLocationFailure() {
+  notificationTitle.innerText = 'Geo location access denied.';
+  notificationTextElement.innerText = 'You denied your device access to your location. Please enter the incident address manually.';
+  locationInput.removeEventListener('focus', getLocation)
+  return displayNotification();
+}
+
+function getLocation() {
+  if (!navigator.geolocation) {
+    notificationTitle.innerText = 'An error occured.';
+    notificationTextElement.innerText = 'Geolocation is not supported by your browser. Please type in the address manually';
+    return displayNotification();
+  }
+
+  const geoOptions = {
+    enableHighAccuracy: true,
+    maximumAge: 30000,
+    timeout: 28000,
+  }
+  navigator.geolocation.getCurrentPosition(getLocationSuccess, getLocationFailure, geoOptions);
+}
+
+locationInput.addEventListener('focus', getLocation);
+
+function incidentFormCheck() {
+  const reportType = reportTypeInput.value.trim();
+  const comment = commentInput.value.trim();
+  const location = locationInput.value.trim();
+  const title = titleInput.value.trim();
+
+  if (!reportType) return checkReportType();
+  if (!title) return checkForTitle();
+  if (!comment) return checkForComment();
+  if (!location) return checkForLocation();
+
+  return { reportType, comment, location, title }
+}
+
+createIncidentBtn.addEventListener('click', () => {
+  console.log('called')
+  const { comment = '', reportType = '', location = '', title = '' } = incidentFormCheck();
+  const incidentForm = new FormData();
+  incidentForm.append('comment', comment);
+  incidentForm.append('location', location);
+  incidentForm.append('type', reportType);
+  incidentForm.append('title', title);
+  imageArray.forEach((image, index) => incidentForm.append(`images ${index}`, image));
+  videoArray.forEach((video, index) => incidentForm.append(`videos${index}`, video));
+  const options = {
+    method: 'POST',
+    // body: JSON.stringify({ location, comment, type: reportType, title }),
+    body: incidentForm,
+    headers: {
+      // 'Content-Type': 'application/json',
+      'x-auth': sessionStorage.getItem('token')
+    }
+  }
+
+  fetch(`${apiVersion}incident/create`, options)
+    .then(handleResponse)
+    .then(res => {
+      console.log(res);
+      notificationTitle.innerText = 'Incident successfully reported';
+      notificationTextElement.innerText = ''
+      displayNotification();
+      // if (arrayOfRecentlyCreatedIncidents.length === 4) arrayOfRecentlyCreatedIncidents.splice(3, 1);
+      // arrayOfRecentlyCreatedIncidents.unshift(res.data);
+      // console.log(arrayOfRecentlyCreatedIncidents);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 });
 
 window.onload = () => {

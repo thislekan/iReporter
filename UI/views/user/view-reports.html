@@ -23,6 +23,44 @@
   <div id="body">
     <div class="padded-body">
       <p id="welcome-text">Welcome. View your reports.</p>
+      <div id="create-form-div">
+        <div class="create">
+          <h2>Report an incident</h2>
+          <div class="create-content">
+            <div class="input-div">
+              <label for="type">Select type of report</label>
+              <select name="type" id="report-type">
+                <option value="">Please select your report type</option>
+                <option value="red-flag">Red Flag</option>
+                <option value="intervention">Intervention</option>
+              </select>
+            </div>
+            <div class="input-div">
+              <label for="title">Title</label>
+              <input type="text" name="title" id="create-incident-title">
+            </div>
+            <div class="input-div for-text">
+              <label for="comments">Enter comments</label>
+              <textarea name="comments" id="comments"></textarea>
+            </div>
+            <div class="input-div">
+              <label for="location">Enter Location or Coordinates</label>
+              <input type="text" name="location" id="location">
+            </div>
+            <div class="input-div">
+              <label for="image or video">Upload Image or Video</label>
+              <input type="file" name="image or video" id="file-upload" accept="image/*, video/*">
+            </div>
+            <div class="preview-img"></div>
+            <div class="btn-div">
+              <button id="create-incident">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="create-modal" id="create-modal">
+        <img src="../../images/promotion.svg" alt="image">
+      </div>
       <div class="notification">
         <div class="notification__body" id="notification-div">
           <div class="close-notification" id="close-notification">
@@ -52,28 +90,46 @@
           </div>
           <div class="report-body-wrapper pushed">
             <div class="report-details">
-              <h4>ID: </h4>
+              <div class="incident-intro">
+                <span class="fa fa-check"></span>
+                <h4>ID: </h4>
+              </div>
               <p id="incident-id"></p>
             </div>
             <div class="report-details">
-              <h4>Type: </h4>
+              <div class="incident-intro">
+                <span class="fa fa-check"></span>
+                <h4>Type: </h4>
+              </div>
               <p id="incident-type"></p>
             </div>
             <div class="report-details">
-              <h4>Created: </h4>
+              <div class="incident-intro">
+                <span class="fa fa-check"></span>
+                <h4>Created: </h4>
+              </div>
               <p id="incident-date"></p>
             </div>
             <div class="report-details">
-              <h4>Status: </h4>
+              <div class="incident-intro">
+                <span class="fa fa-check"></span>
+                <h4>Status: </h4>
+              </div>
               <p id="incident-status"></p>
             </div>
             <div class="report-details">
-              <h4>Title: </h4>
+              <div class="incident-intro">
+                <span class="fa fa-check"></span>
+                <h4>Title: </h4>
+              </div>
               <p id="incident-title"></p>
             </div>
             <div class="location-div">
               <div class="report-details">
-                <h4>Location: </h4>
+                <div class="incident-intro">
+                  <span class="fa fa-check"></span>
+                  <h4>Location: </h4>
+                </div>
                 <p id="incident-location"></p>
               </div>
               <div class="map">
@@ -89,11 +145,11 @@
               <h4>Images or Videos: </h4>
               <div class="content-wrapper">
                 <!-- multiple images here -->
-                <div class="image-container">
-                  <img src="../../images/quiet.jpg" alt="">
-                  <img src="../../images/quiet.jpg" alt="">
-                  <img src="../../images/quiet.jpg" alt="">
-                  <img src="../../images/quiet.jpg" alt="">
+                <div class="image-container" id="incident-img-div">
+                  <!-- <img src="" alt="image" class="incident-img">
+                  <img src="" alt="image" class="incident-img">
+                  <img src="" alt="image" class="incident-img">
+                  <img src="" alt="image" class="incident-img"> -->
                 </div>
               </div>
             </div>
