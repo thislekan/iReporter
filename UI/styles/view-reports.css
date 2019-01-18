@@ -20,7 +20,7 @@ nav{
     /* width: calc(100% - 1rem); */
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     background: white;
     box-shadow: 0px 5px 5px -4px rgba(0, 0, 255, 0.1);
     z-index: 3;
@@ -28,6 +28,10 @@ nav{
 .padded-body{
     padding: 3.5rem 1rem;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 #welcome-text{
     font-size: 1.8rem;
@@ -42,8 +46,9 @@ nav{
     position: fixed;
     text-align: center;
     padding: 1rem;
-    height: 25rem;
+    /* height: 25rem; */
     width: calc(100% - 4rem);
+    left: 1rem;
     z-index: 2;
     background: white;
     display: flex;
@@ -51,8 +56,7 @@ nav{
     align-items: center;
     justify-content: center;
     top: calc(50% - 12.5rem);
-    /* border-radius: 0.25rem; */
-    box-shadow: 4px 4px 4px -5px gainsboro;
+    box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.18);
     border: 1px solid #cf4241;
     display: none;
 }
@@ -81,6 +85,7 @@ h2{
     background: white;
     box-shadow: 0px 2px 6px 0px hsla(260, 6%, 57%);
     padding: 0 1rem;
+    position: relative;
 }
 h4{
     color: #1d394a;
@@ -110,12 +115,17 @@ h4{
     margin-left: 1rem;
     width: 6.5rem;
 }
+#create-incident{
+    background: #117d5a;
+    border: 1px solid #117d5a;
+    width: 9rem;
+    color: white;
+    letter-spacing: .5px;
+}
 .map-region{
     height: 20rem;
     border: 1px solid;
     position: relative;
-    /* margin: 2rem 0; */
-    /* display: none; */
 }
 .view-btn{
     background: #23948c;
@@ -142,21 +152,26 @@ textarea {
     border: 1px solid rgba(29, 57, 74, 0.3);
     outline: none;
     margin-top: 0.5rem;
+    font-family: 'Roboto', 'sans-serif', sans-serif;
+    letter-spacing: .1rem;
+    padding: 2px .5rem;
 }
 .overlay{
     position: fixed;
     background: rgba(0,0,0,0.2);
-    height: 100%;
+    height: 90vh;
+    overflow-y: scroll;
     width: calc(100% - 2rem);
     overflow-y: scroll;
     top: 4.5rem;
     justify-content: center;
+    z-index: 2;
     display: none;
 }
 #detailed-incident{
     position: absolute;
     z-index: 2;
-    height: 100%;
+    /* height: 100%; */
     display: flex;
     justify-content: center;
     top: calc(0% + 1.5rem);
@@ -252,18 +267,20 @@ textarea {
 }
 .pushed{
     margin-top: 4rem;
-    height: 107rem;
+    /* height: 107rem; */
 }
 .map{
     margin: 2rem 0;
 }
 .delete-prompt{
     position: fixed;
-    height: 30rem;
+    height: 15rem;
     width: calc(100% - 4rem);
-    top: calc(50vh - 15rem);
-    background: rgba(0,0,0,0.2);
+    top: calc(50vh - 7.5rem);
     padding: 2rem 1rem;
+    z-index: 2;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
     display: none;
 }
 .prompt-body{
@@ -272,12 +289,9 @@ textarea {
     align-items: center;
     justify-content: space-evenly;
     text-align: center;
-    background: white;
     width: 100%;
     height: 100%;
-    border: 1px solid white;
-    border-radius: .25rem;
-    box-shadow: 2px 4px 4px -4px #afa6a6;
+    z-index: 2;
 }
 .alert-btns{
     width: unset;
@@ -301,12 +315,15 @@ textarea {
 }
 .bottom-div{
     background: hsla(210, 9%, 96%, 1);
-    margin: 1rem -1rem -1.5rem;
     border-radius: 0 0 .25rem .25rem;
     padding: 0 1rem;
+    position: absolute;
+    margin: unset;
+    left: 0;
+    bottom: 0;
+    width: calc(100% - 2rem);
 }
 .incident-intro{
-    /* width: 7rem; */
     display: flex;
     align-items: center;
 }
@@ -335,21 +352,24 @@ textarea {
     position: fixed;
     bottom: 1rem;
     right: 1rem;
+    z-index: 2;
 }
 .create-modal img{
     height: 3rem;
     width: 3rem;
 }
 #create-form-div{
-    height: 100vh;
-    position: sticky;
-    /* background: hsl(291, 3%, 92%); */
+    position: fixed;
     background: white;
     padding: 1rem;
-    top: 5.2rem;
-    width: calc(100% - 2rem);
+    top: 6rem;
+    width: calc(100% - 4rem);
+    box-shadow: 0px 0px 2px 0px hsla(245, 8%, 82%, 1);
+    z-index: 2;
+}
+.create{
+    height: 85vh;
     overflow-y: scroll;
-    box-shadow: 0 3px 2px 0px hsla(245, 8%, 82%, 1);
 }
 .input-div{
     display: flex;
@@ -381,15 +401,21 @@ select, input{
     object-fit: scale-down;
     border: 1px solid gainsboro;
 }
+#close-create-form{
+    top: .5rem;
+    right: .5rem;
+}
+#ireporter-logo{
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+}
 @media only screen and (min-device-width: 700px){
     .content-wrapper{
         height: 25rem;
     }
     .image-container img{
         height: 12rem;
-    }
-    .map-region{
-        height: 11rem;
     }
     .list-of-reports{
         display: grid;
@@ -409,16 +435,31 @@ select, input{
     }
     #detailed-incident{
         width: calc(100% - 25rem);
-        /* left: calc(50% - 25rem); */
-        /* position: fixed; */
     }
-    .bottom-div{
-        margin: 1rem -1rem -0.5rem;
+    .notification__body{
+        width: calc(100% - 40rem);
+        left: 20rem;
+    }
+    #create-form-div{
+        /* left: 20rem; */
+        top: 7rem;
+        width: calc(100% - 40rem);
+    }
+    .create{
+        height: 80vh;
+    }
+    .delete-prompt{
+        width: calc(100% - 45rem);
+        top: calc(50vh - 7.5rem);
     }
 }
 @media only screen and (min-device-width: 900px){
     .padded-body{
         padding: 5rem 10rem;
+    }
+    .notification__body{
+        width: calc(100% - 70rem);
+        left: 35rem;
     }
     .content-wrapper{
         height: 45rem;
@@ -429,13 +470,19 @@ select, input{
     .overlay{
         width: calc(100% - 20rem);
     }
-    .delete-prompt, .notification__body{
-        width: calc(100% - 22rem);
+    .delete-prompt {
+        width: calc(100% - 70rem);
+    }
+    .create{
+        height: 82vh;
+    }
+    #create-form-div{
+        width: calc(100% - 70rem);
+    }
+    .report-body-wrapper{
+        height: 26rem;
     }
     .pushed{
-        height: 127rem;
+        height: 100%;
     }
-    /* #detailed-incident{
-        left: unset;
-    } */
 }

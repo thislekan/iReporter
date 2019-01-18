@@ -14,8 +14,7 @@
   <header>
     <nav>
       <div class="navigation__wrapper">
-        <!-- <div><a href="admin-interventions.html">Interventions</a></div>
-        <div><a href="admin-edit.html">Red flags</a></div> -->
+        <div><a href="../../../index.html" id="ireporter-logo">iReoprter</a></div>
         <div><button id="log-out">Log Out</button></div>
       </div>
     </nav>
@@ -23,9 +22,18 @@
   <div id="body">
     <div class="padded-body">
       <p id="welcome-text">Welcome to your dashboard.</p>
+      <div class="more-details-div">
+        <div class="close-notification" id="close-details-div">
+          <span class="fa fa-close"></span>
+        </div>
+        <div class="details-wrapper">
+          <div class="map"></div>
+          <div class="image-div"></div>
+        </div>
+      </div>
       <div class="notification">
         <div class="notification__body" id="notification-div">
-          <div class="close-notification">
+          <div class="close-notification" id="close-notification">
             <span class="fa fa-close"></span>
           </div>
           <h3></h3>
@@ -33,18 +41,34 @@
         </div>
       </div>
       <div class="body__content">
-        <h2>Search for an incident</h2>
-        <div id="search-div">
-          <label for="select view">Select incident</label>
-          <select name="select view" id="incident-view">
-            <option value="all">All</option>
-            <option value="red-flag">Red flags</option>
-            <option value="intervention">Intervention</option>
-            <option value="draft">Draft</option>
-            <option value="rejected">Rejected</option>
-            <option value="resolved">Resolved</option>
-            <option value="under-investigation">Under Investigation</option>
-          </select>
+        <div class="control">
+          <div id="search-div">
+            <label for="select view">Sort incident</label>
+            <select name="select view" id="incident-view">
+              <option value="">Select an option</option>
+              <option value="all">All</option>
+              <option value="red-flag">Red flags</option>
+              <option value="intervention">Intervention</option>
+              <option value="draft">Draft</option>
+              <option value="rejected">Rejected</option>
+              <option value="resolved">Resolved</option>
+              <option value="under-investigation">Under Investigation</option>
+            </select>
+          </div>
+          <div id="filter-div">
+            <label for="filter list">Search Incident</label>
+            <select name="filter list" id="filter-options">
+              <option value="">Select option</option>
+              <option value="id">Incident ID</option>
+              <!-- <option value="createdOn">Date</option> -->
+              <option value="location">Location</option>
+            </select>
+            <input type="text" name="" id="filter-value" placeholder="Please enter your search term here">
+            <div class="search-btns">
+              <button id="filter-list-btn">Search</button>
+              <button id='cancel-search-btn'>Clear Search</button>
+            </div>
+          </div>
         </div>
         <div class="recently-created">
           <h2 id="incident-title"></h2>

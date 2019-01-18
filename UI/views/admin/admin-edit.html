@@ -14,8 +14,11 @@
   <header>
     <nav>
       <div class="navigation__wrapper">
-        <div><a href="admin-dashboard.html">Dashboard</a></div>
-        <div><button id="log-out">Log Out</button></div>
+        <div><a href="../../../index.html" id="ireporter-logo">iReoprter</a></div>
+        <div>
+          <div><a href="admin-dashboard.html">Dashboard</a></div>
+          <div><button id="log-out">Log Out</button></div>
+        </div>
       </div>
     </nav>
   </header>
@@ -54,6 +57,7 @@
               <div class="report-details">
                 <h4>Status: </h4>
                 <select name="" id="incident-status" disabled>
+                  <option value="">Select status</option>
                   <option value="draft">Draft</option>
                   <option value="under-investigation">Under Investigation</option>
                   <option value="rejected">Rejected</option>

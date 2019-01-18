@@ -65,7 +65,7 @@ loginButton.addEventListener('click', () => {
       passwordInput.value = '';
       setTimeout(() => {
         if (user.isAdmin) return location.href = '../views/admin/admin-dashboard.html';
-        location.href = '../views/user/user-dashboard.html'
+        location.href = '../views/user/view-reports.html'
       }, 2500);
     })
     .catch(err => {

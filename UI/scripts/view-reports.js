@@ -1,7 +1,8 @@
 const incidentsViewDiv = document.getElementById('incidents-view');
 const incidentIdentifier = document.getElementById('current-view-title');
 const sortIncidentByStatus = document.getElementById('sort-report');
-const overlayDiv = document.getElementById('overlay')
+const overlayDiv = document.getElementById('overlay');
+const imageAndVideoParentDiv = document.querySelector('.image-and-video-div');
 const logoutButton = document.getElementById('log-out');
 
 const incidentType = document.getElementById('incident-type');
@@ -15,6 +16,10 @@ const closeDetailedIncidentDiv = document.getElementById('close-details');
 const mapDiv = document.querySelector('.map-region');
 const incidentImageDiv = document.getElementById('incident-img-div');
 // const incidentImage = document.querySelectorAll('.incident-img');
+
+const incidentModalCreateButton = document.getElementById('create-modal')
+const createIncidentForm = document.getElementById('create-form-div');
+const createIncidentFormCloseButton = document.getElementById('close-create-form');
 
 const reportTypeInput = document.getElementById('report-type');
 const titleInput = document.getElementById('create-incident-title');
@@ -39,10 +44,23 @@ const incidentDetailsModal = document.getElementById('detailed-incident');
 let listOfAllIncidents = [];
 let filteredList = [];
 
+previewImgDiv.style.display = 'none';
+createIncidentForm.style.display = 'none';
+
 closeDetailedIncidentDiv.addEventListener('click', () => {
   incidentDetailsModal.style.display = 'none';
   overlayDiv.style.display = 'none';
-})
+});
+
+createIncidentFormCloseButton.addEventListener('click', () => {
+  createIncidentForm.style.display = 'none';
+  incidentModalCreateButton.style.display = 'flex';
+});
+
+incidentModalCreateButton.addEventListener('click', () => {
+  createIncidentForm.style.display = 'block';
+  incidentModalCreateButton.style.display = 'none'
+});
 
 sortIncidentByStatus.addEventListener('change', () => {
   switch (sortIncidentByStatus.value) {
@@ -137,7 +155,6 @@ function convertAddressToGeocode(location) {
 
 function showIncidentDetails(index) {
   const incident = filteredList[index];
-  console.log(incident);
   const { type, id, location, status, comment, title, createdOn } = incident;
   incidentComment.value = comment;
   incidentId.innerText = id;
@@ -146,12 +163,14 @@ function showIncidentDetails(index) {
   incidentStatus.innerText = status;
   incidentDate.innerText = moment(Number(createdOn)).format('MMMM Do YYYY, h:mm:ss a');
   incidentTitle.innerText = title;
-  incident.images.forEach(element => {
-    const imgTag = `<img src="${element}" alt='image'>`;
-    incidentImageDiv.innerHTML += imgTag;
-  });
-  // incidentImage.forEach((image, i) => image.src = incident.images[i]);
-
+  if (incident.images && incident.images.length) {
+    incident.images.forEach(element => {
+      const imgTag = `<img src="${element}" alt='image'>`;
+      incidentImageDiv.innerHTML += imgTag;
+    });
+  } else {
+    imageAndVideoParentDiv.style.display = 'none';
+  }
 
   incidentDetailsModal.style.display = 'flex';
   overlayDiv.style.display = 'flex';
@@ -198,6 +217,7 @@ cancelDeletePromptBtn.addEventListener('click', () => {
 function afterSuccessfulDelete(res) {
   sessionStorage.removeItem('incident')
   sessionStorage.removeItem('type');
+  deletePromptDiv.style.display = 'none';
   notificationTitle.innerText = 'The report has been successfully deleted.';
   notificationTextElement.innerText = `The ${res.data.type} report with ID: ${res.data.id} has been deleted.`;
   displayNotification();
@@ -239,49 +259,21 @@ let videoArray = [];
 
 fileUploadInput.addEventListener('change', (event) => {
   const allFilesReference = [...event.target.files];
+  const uploadedFiles = [...event.target.files];
 
-  const reader = new FileReader();
   for (let i = 0; i < allFilesReference.length; i++) {
+    const reader = new FileReader();
     const element = allFilesReference[i];
     reader.onload = () => {
-      const uploadedFiles = [...event.target.files];
+      if (previewImgDiv.style.display === 'none') previewImgDiv.style.display = 'grid';
+
       imageArray = uploadedFiles.filter(file => file.type.includes('image'));
       videoArray = uploadedFiles.filter(file => file.type.includes('video'));
       const img = `<img src='${reader.result}' alt='image'>`;
       previewImgDiv.innerHTML += img;
-      // setTimeout(() => {
-      //   console.log(result)
-      // }, 60000);
     }
-    reader.onloadend = () => {
-      console.log('end');
-      const foo = []
-      foo.push(reader.result);
-      console.log(foo);
-    };
     reader.readAsDataURL(element);
   }
-
-
-  // reader.onload = function () {
-  //   if (event.target.files.length <= 4) {
-  //     blobArray.unshift(reader.result)
-  //     const uploadedFiles = [...event.target.files];
-  //     imageArray = uploadedFiles.filter(file => file.type.includes('image'));
-  //   } else {
-  //     reader.abort();
-  //     notificationTitle.innerText = 'An error has occured';
-  //     notificationTextElement.innerText = 'Maximum of 4 images allowed';
-  //     fileUploadInput.value = '';
-  //     displayNotification();
-  //   }
-  //   console.log(blobArray);
-  //   // console.log(reader.result);
-  // };
-  // allFilesReference.forEach(element => {
-  //   reader.readAsDataURL(element);
-  // });
-
 })
 
 commentInput.addEventListener('keyup', (e) => {
@@ -327,10 +319,8 @@ function getLocationSuccess(position) {
 }
 
 function getLocationFailure() {
-  notificationTitle.innerText = 'Geo location access denied.';
-  notificationTextElement.innerText = 'You denied your device access to your location. Please enter the incident address manually.';
-  locationInput.removeEventListener('focus', getLocation)
-  return displayNotification();
+  locationInput.placeholder = 'Please enter the address here'
+  locationInput.removeEventListener('focus', getLocation);
 }
 
 function getLocation() {
@@ -372,14 +362,12 @@ createIncidentBtn.addEventListener('click', () => {
   incidentForm.append('location', location);
   incidentForm.append('type', reportType);
   incidentForm.append('title', title);
-  imageArray.forEach((image, index) => incidentForm.append(`images ${index}`, image));
-  videoArray.forEach((video, index) => incidentForm.append(`videos${index}`, video));
+  imageArray.forEach((image, index) => incidentForm.append(`images[${index}]`, image));
+  videoArray.forEach((video, index) => incidentForm.append(`videos[${index}]`, video));
   const options = {
     method: 'POST',
-    // body: JSON.stringify({ location, comment, type: reportType, title }),
     body: incidentForm,
     headers: {
-      // 'Content-Type': 'application/json',
       'x-auth': sessionStorage.getItem('token')
     }
   }
@@ -389,14 +377,17 @@ createIncidentBtn.addEventListener('click', () => {
     .then(res => {
       console.log(res);
       notificationTitle.innerText = 'Incident successfully reported';
-      notificationTextElement.innerText = ''
+      notificationTextElement.innerText = '';
+      createIncidentForm.style.display = 'none';
       displayNotification();
       // if (arrayOfRecentlyCreatedIncidents.length === 4) arrayOfRecentlyCreatedIncidents.splice(3, 1);
       // arrayOfRecentlyCreatedIncidents.unshift(res.data);
       // console.log(arrayOfRecentlyCreatedIncidents);
     })
     .catch(err => {
-      console.log(err);
+      notificationTitle.innerText = 'An error occured';
+      notificationTextElement.innerText = err.error.error;
+      displayNotification();
     });
 });
 

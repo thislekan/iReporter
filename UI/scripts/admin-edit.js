@@ -12,6 +12,9 @@ const notificationTextElement = notificationBox.querySelector('p');
 const notificationTitle = notificationBox.querySelector('h3');
 
 const editIncidentBtn = document.getElementById('edit-btn');
+const logOutBtn = document.getElementById('log-out');
+
+logOutBtn.addEventListener('click', () => location.href = '../../../index.html');
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';

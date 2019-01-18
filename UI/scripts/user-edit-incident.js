@@ -24,6 +24,17 @@ function displayNotification() {
   notificationBox.style.display = 'flex';
 }
 
+incidentComment.addEventListener('keyup', (e) => {
+  const comment = e.target.value;
+  if (comment.length < 150) {
+    incidentComment.style.border = '1px solid rgba(29, 57, 74, 0.1)';
+    editCommentButton.disabled = false;
+  } else {
+    incidentComment.style.border = '1px solid red';
+    editCommentButton.disabled = true;
+  }
+});
+
 editCommentButton.addEventListener('click', () => {
   if (editCommentButton.innerText === 'Post Comment') {
     updateComment();
@@ -45,10 +56,10 @@ editLocationButton.addEventListener('click', () => {
 function fillInValuesForReport(params) {
   const { type, id, location, status, comment, title, createdOn } = params.data;
   incidentComment.value = comment;
-  incidentId.innerText = id;
+  // incidentId.innerText = id;
   incidentLocation.value = location;
   incidentType.innerHTML = `${(type === 'red-flag') ? type + '<span class="fa fa-flag"></span>' : type + "<span class='fa fa-stop-circle-o'></span>"}`;
-  incidentStatus.innerText = status;
+  // incidentStatus.innerText = status;
   incidentDate.innerText = moment(Number(createdOn)).format('MMMM Do YYYY, h:mm:ss a');
   incidentTitle.innerText = title;
 }

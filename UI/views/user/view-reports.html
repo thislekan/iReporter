@@ -14,9 +14,12 @@
   <header>
     <nav>
       <div class="navigation__wrapper">
-        <div><a href="profile.html">Profile</a></div>
-        <div><a href="user-dashboard.html">Dashboard</a></div>
-        <div><button id="log-out">Log Out</button></div>
+        <div><a href="../../../index.html" id="ireporter-logo">iReporter</a></div>
+        <div>
+          <div><a href="profile.html">Profile</a></div>
+          <!-- <div><a href="user-dashboard.html">Dashboard</a></div> -->
+          <div><button id="log-out">Log Out</button></div>
+        </div>
       </div>
     </nav>
   </header>
@@ -24,6 +27,9 @@
     <div class="padded-body">
       <p id="welcome-text">Welcome. View your reports.</p>
       <div id="create-form-div">
+        <div class="close-notification" id="close-create-form">
+          <span class="fa fa-close"></span>
+        </div>
         <div class="create">
           <h2>Report an incident</h2>
           <div class="create-content">
@@ -49,7 +55,7 @@
             </div>
             <div class="input-div">
               <label for="image or video">Upload Image or Video</label>
-              <input type="file" name="image or video" id="file-upload" accept="image/*, video/*">
+              <input type="file" name="image or video" multiple id="file-upload" accept="image/*, video/*">
             </div>
             <div class="preview-img"></div>
             <div class="btn-div">
