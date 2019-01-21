@@ -20,22 +20,30 @@ nav{
     /* width: calc(100% - 1rem); */
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     background: white;
     box-shadow: 0px 5px 5px -4px rgba(0, 0, 255, 0.1);
     z-index: 3;
+}
+#ireporter-logo {
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
 }
 .padded-body{
     padding: 3.5rem 1rem;
     position: relative;
 }
-.notification{
+.notification__body{
     position: fixed;
+    text-align: center;
+    padding: 1rem;
     height: 25rem;
-    width: calc(100% - 2rem);
+    width: calc(100% - 4rem);
     z-index: 2;
     background: white;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     top: calc(50% - 12.5rem);
@@ -44,7 +52,7 @@ nav{
     border: 1px solid #cf4241;
     display: none;
 }
-.notification__body{
+.close-notification{
     height: 2.5rem;
     width: 2.5rem;
     font-size: 1.5rem;
@@ -73,7 +81,7 @@ nav{
 }
 .navigation__wrapper div:nth-of-type(1),
 .navigation__wrapper div:nth-of-type(2){
-    margin: 0 1rem;
+    /* margin: 0 1rem; */
     display: flex;
     align-items: center;
     padding: 0 .5rem;
@@ -85,11 +93,11 @@ nav{
 }
 .edit__body__wrapper{
     padding: .5rem 1rem;
-    border: 1px solid rgba(242, 178, 28, 0.5);
     border-radius: .25rem;
     margin: 1rem 0;
+    box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.38);
 }
-select, input{
+select{
     height: 3rem;
     border: 1px solid rgba(29, 57, 74, 0.1);
     background-color: rgba(29, 57, 74, 0.1);
@@ -98,78 +106,29 @@ select, input{
     color: #0c0000;
     padding: .5rem 1rem;
 }
+#incident-id{
+    margin-left: 1rem;
+    text-align: right;
+}
 h4{
     color: #1d394a;
     margin: 0.5rem 0;
 }
 .report-details{
-    display: flex;
+    padding: .6rem .75rem;
+    display: grid;
+    grid-template-columns: 10rem auto;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(29, 57, 74, 0.1);
-    height: 4.2rem;
-    margin: .5rem 0;
+}
+.incident-intro{
+    display: flex;
+    align-items: center;
 }
 .report-details p{
     margin: .5rem 0;
-}
-.display-btn-div{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.view-btns{
-    height: 3rem;
-    border-radius: .25rem;
-    margin: 1rem 0;
-    font-size: 1.2rem;
-    outline: none;
-    padding: 0 1.5rem;
-}
-.view-map-btn{
-    background: #23948c;
-    border: 1px solid #23948c;
-    color: black;
-}
-.view-images-btn{
-    background: #117d5a;
-    border: 1px solid #117d5a;
-    color: white;
-}
-.view-comments-btn{
-    background: #f2b21c;
-    border: 1px solid #f2b21c;
-    color: black;
-}
-.view-videos-btn{
-    background: #1d394a;
-    border: 1px solid #1d394a;
-    color: white;
-}
-.map-region{
-    height: 20rem;
-    /* border: 1px solid; */
-    position: relative;
-    display: none;
-}
-.content-wrapper{
-    height: 30rem;
-    margin: 1rem 0;
-}
-.image-container{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-}
-.image-container img{
-    height: 14.5rem;
-    width: 100%;
-    object-fit: cover;
-    object-position: center;
-    border: 1px solid rgba(29, 57, 74, 0.35);
-    border-radius: .25rem;
+    margin-left: 1.5rem;
+    text-align: right;
 }
 .fa{
     margin-left: 1rem;
@@ -177,11 +136,34 @@ h4{
 .fa-flag{
     color: #cf4241;
 }
+.fa-stop-circle-o{
+    color: #23948c;
+}
+.incident-intro .fa{
+    margin: unset;
+}
+.incident-intro h4{
+    color: #1d394a;
+    margin: 0.5rem 0;
+    margin-left: 2rem;
+}
+.fa-check{
+    height: 1.5rem;
+    width: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #117d5a;
+    color: white;
+    border-radius: 100%;
+    font-size: 1rem;
+}
 .comment-div{
     margin: 1rem 0;
 }
 textarea{
-    height: 10rem;
+    /* height: 10rem; */
+    height: 7rem;
     width: 100%;
     border-radius: .25rem;
     border: 1px solid rgba(29, 57, 74, 0.3);
@@ -211,9 +193,15 @@ textarea{
     margin-right: 1rem;
 }
 .edit-location{
-    background-color: #1d394a;
+    background: #23948c;
+    border: 1px solid #23948c;
     color: white;
-    border: 1px solid #1d394a;
+}
+.close-notification .fa{
+    margin: unset;
+}
+#loader-div{
+    display: none;
 }
 @media screen and (min-device-width: 700px){
     .padded-body{
@@ -235,15 +223,21 @@ textarea{
         align-items: center;
         justify-content: space-evenly; 
     }
+    .notification__body{
+        width: calc(100% - 32rem);
+    }
 }
 @media screen and (min-device-width: 900px){
     .padded-body{
-        padding: 5rem 25rem;
+        padding: 5rem 40rem;
     }
     .content-wrapper{
         height: 45rem;
     }
     .image-container img{
         height: 22rem;
+    }
+    .notification__body{
+        width: calc(100% - 82rem);
     }
 }

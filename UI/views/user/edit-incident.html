@@ -7,6 +7,7 @@
   <title> iReporter || User-Edit </title>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../styles/loader.css">
   <link rel="stylesheet" href="../../styles/edit-incident.css">
 </head>
 
@@ -14,19 +15,25 @@
   <header>
     <nav>
       <div class="navigation__wrapper">
-        <div><a href="user-dashboard.html">Dashboard</a></div>
-        <div><a href="view-reports.html">View Reports</a></div>
-        <div><button id="log-out">Log Out</button></div>
+        <div><a href="../../../index.html" id="ireporter-logo">iReporter</a></div>
+        <div>
+          <div><a href="view-reports.html">View Reports</a></div>
+          <div><button id="log-out">Log Out</button></div>
+        </div>
       </div>
     </nav>
   </header>
   <div id="body">
     <div class="padded-body">
+      <div class="loader-div" id="loader-div">
+        <div class="loader"></div>
+      </div>
       <div class="notification">
-        <div class="notification__body">
-          <div class="close-notification">
-            <span>x</span>
+        <div class="notification__body" id="notification-div">
+          <div class="close-notification" id="close-notification">
+            <span class="fa fa-close"></span>
           </div>
+          <h3></h3>
           <p></p>
         </div>
       </div>
@@ -37,48 +44,52 @@
             <div class="edit__body">
               <div class="edit__body__wrapper">
                 <div class="report-details">
-                  <h4>ID: </h4>
-                  <p>09234</p>
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Title: </h4>
+                  </div>
+                  <p id="incident-title"></p>
+                </div>
+                <!-- <div class="report-details">
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>ID: </h4>
+                  </div>
+                  <p id="incident-id"></p>
+                </div> -->
+                <div class="report-details">
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Type: </h4>
+                  </div>
+                  <p id="incident-type"></p>
                 </div>
                 <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Red Flag <span class="fa fa-flag"></span></p>
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Created: </h4>
+                  </div>
+                  <p id="incident-date"></p>
                 </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Draft</p>
-                </div>
+                <!-- <div class="report-details">
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Status: </h4>
+                  </div>
+                  <p id="incident-status"></p>
+                </div> -->
                 <div class="location-div">
-                  <div class="report-details">
+                  <div class="comment-div">
                     <h4>Location: </h4>
-                    <input type="text" name="" id="address-input" value="43 Okorogbo road, Idi-ape Illorin" disabled>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
+                    <textarea name="" id="incident-location" value="" disabled></textarea>
                   </div>
                 </div>
                 <div class="comment-div" id="comment-div">
-                  <textarea name="" id="" disabled></textarea>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
+                  <h4>Comment</h4>
+                  <textarea name="" id="incident-comment" disabled></textarea>
                 </div>
                 <div class="edit-btn-div">
-                  <button class="edit-btn edit-comment" id="edit-comment-btn">Edit Incident</button>
+                  <button class="edit-btn edit-comment" id="edit-comment-btn">Edit Comment</button>
                   <button class="edit-btn edit-location" id="edit-location-btn">Edit Location</button>
                 </div>
               </div>
@@ -88,6 +99,8 @@
       </div>
     </div>
   </div>
+  <script src="../../scripts/utils.js"></script>
+  <script src="../../scripts/moment.js"></script>
   <script src="../../scripts/user-edit-incident.js"></script>
 </body>
 

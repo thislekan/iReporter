@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title> iReporter || Log In</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/loader.css">
   <link rel="stylesheet" href="../styles/login.css">
 </head>
 
@@ -13,10 +14,14 @@
   <div>
     <div class="content">
       <div class="content__body">
+        <div class="loader-div" id="loader-div">
+          <div class="loader"></div>
+        </div>
         <div class="notification-div" id="notification-div">
           <div id="close-notification">
             <span>x</span>
           </div>
+          <h5></h5>
           <p></p>
         </div>
         <div id="aside">
@@ -46,6 +51,7 @@
       </div>
     </div>
   </div>
+  <script src="../scripts/utils.js"></script>
   <script src="../scripts/login.js"></script>
 </body>
 
