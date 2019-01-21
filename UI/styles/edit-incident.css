@@ -200,6 +200,9 @@ textarea{
 .close-notification .fa{
     margin: unset;
 }
+#loader-div{
+    display: none;
+}
 @media screen and (min-device-width: 700px){
     .padded-body{
         padding: 3.5rem 15rem;

@@ -37,15 +37,46 @@ const notificationTitle = notificationBox.querySelector('h3');
 const deletePromptDiv = document.querySelector('.delete-prompt');
 const cancelDeletePromptBtn = deletePromptDiv.querySelector('.cancel-btn');
 const deleteReportBtn = deletePromptDiv.querySelector('.delete-btn');
-
 const incidentDetailsModal = document.getElementById('detailed-incident');
 
+const searchDiv = document.getElementById('filter-div');
+const filterOptions = document.getElementById('filter-options');
+const searchTermInput = document.getElementById('filter-value');
+const filterListbtn = document.getElementById('filter-list-btn');
+const cancelSearchBtn = document.getElementById('cancel-search-btn');
 
+const loader = document.getElementById('loader-div');
+const videoPreviewDiv = document.querySelector('.preview-video');
+const videoTag = document.getElementById('video');
+const videoSource = document.createElement('source');
+
+incidentIdentifier.innerText = 'All reported incidents';
 let listOfAllIncidents = [];
 let filteredList = [];
 
+searchDiv.style.display = 'none'
+filterListbtn.style.display = 'none';
+searchTermInput.style.display = 'none';
+cancelSearchBtn.style.display = 'none';
 previewImgDiv.style.display = 'none';
 createIncidentForm.style.display = 'none';
+videoPreviewDiv.style.display = 'none';
+
+function showLoader() {
+  loader.style.display = 'flex';
+}
+
+function showFilterDiv() {
+  searchDiv.style.display = 'flex';
+  searchDiv.style.height = '8rem';
+}
+
+function showSearchTermInput() {
+  searchDiv.style.height = '16.25rem'
+  filterListbtn.style.display = 'initial';
+  cancelSearchBtn.style.display = 'initial';
+  searchTermInput.style.display = 'initial';
+}
 
 closeDetailedIncidentDiv.addEventListener('click', () => {
   incidentDetailsModal.style.display = 'none';
@@ -62,41 +93,53 @@ incidentModalCreateButton.addEventListener('click', () => {
   incidentModalCreateButton.style.display = 'none'
 });
 
+function toggleVideoDiv(params) {
+  if (params && params === 'hide') return videoPreviewDiv.style.display = 'none';
+  return videoPreviewDiv.style.display = 'block';
+}
+
 sortIncidentByStatus.addEventListener('change', () => {
   switch (sortIncidentByStatus.value) {
     case 'all':
       incidentIdentifier.innerText = 'All reported incidents';
       filteredList = listOfAllIncidents.reverse();
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList);
       break;
     case 'draft':
       incidentIdentifier.innerText = 'All pending incidents';
       filteredList = listOfAllIncidents.reverse().filter(incident => incident.status === 'draft');
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList)
       break;
     case 'resolved':
       incidentIdentifier.innerText = 'All resolved incidents';
       filteredList = listOfAllIncidents.reverse().filter(incident => incident.status === 'resolved');
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList)
       break;
     case 'rejected':
       incidentIdentifier.innerText = 'All rejected incidents';
       filteredList = listOfAllIncidents.reverse().filter(incident => incident.status === 'rejected');
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList)
       break;
     case 'under-investigation':
       incidentIdentifier.innerText = 'All incidents under investigation';
       filteredList = listOfAllIncidents.reverse().filter(incident => incident.status === 'under-investigation');
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList)
       break;
     case 'red-flag':
       incidentIdentifier.innerText = 'All reported Red flag incidents';
       filteredList = listOfAllIncidents.reverse().filter(incident => incident.type === 'red-flag');
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList)
       break;
     case 'intervention':
       incidentIdentifier.innerText = 'All reported Intervention incidents';
       filteredList = listOfAllIncidents.reverse().filter(incident => incident.type === 'intervention');
+      if (searchDiv.style.display === 'none') showFilterDiv();
       updateView(filteredList)
       break;
     default:
@@ -105,6 +148,49 @@ sortIncidentByStatus.addEventListener('change', () => {
 });
 
 logoutButton.addEventListener('click', () => location.href = '../../../index.html');
+
+filterOptions.addEventListener('change', (e) => {
+  if (e.target.value) {
+    searchTermInput.value = '';
+    showSearchTermInput();
+    return searchCriteria = e.target.value;
+  }
+});
+
+function cancelSearch(params) {
+  incidentIdentifier.innerText = params;
+  updateView(filteredList);
+  searchDiv.style.display = 'none';
+  filterListbtn.style.display = 'none';
+  cancelSearchBtn.style.display = 'none';
+  searchTermInput.style.display = 'none';
+  filterOptions.value = '';
+}
+
+let searchCriteria;
+let prevFilteredListTitle;
+let searchResult;
+
+filterListbtn.addEventListener('click', () => {
+  const searchValue = searchTermInput.value;
+  if (!searchCriteria || !searchValue) {
+    notificationTitle.innerText = 'An error has occured';
+    notificationTextElement.innerText = 'You have not provided the search term/value';
+    displayNotification();
+  } else {
+    searchResult = filteredList.filter(element => element[searchCriteria].toLowerCase().includes(searchValue));
+    if (searchResult.length) {
+      prevFilteredListTitle = incidentIdentifier.innerText;
+      incidentIdentifier.innerText = 'Displaying search result';
+      updateView(searchResult);
+    } else {
+      incidentIdentifier.innerText = 'No result found';
+      updateView(filteredList);
+    }
+  }
+});
+
+cancelSearchBtn.addEventListener('click', () => cancelSearch(prevFilteredListTitle));
 
 function dateCreated(date) {
   const created = new Date(Number(date));
@@ -182,6 +268,7 @@ notificationBoxCloser.addEventListener('click', () => {
 });
 
 function displayNotification() {
+  if (loader.style.display === 'flex') loader.style.display = 'none';
   notificationBox.style.display = 'flex';
 }
 
@@ -228,6 +315,7 @@ function afterSuccessfulDelete(res) {
 }
 
 function deleteIncident(id, type) {
+  showLoader();
   const options = {
     method: 'DELETE',
     body: JSON.stringify({ type, id }),
@@ -254,23 +342,58 @@ deleteReportBtn.addEventListener('click', () => {
   deleteIncident(id, type);
 });
 
+function fileCheckFailure(type) {
+  imageArray = [];
+  videoArray = [];
+  createIncidentBtn.disabled = true;
+  notificationTitle.innerText = `Maximum number of ${type} reached`;
+  notificationTextElement.innerText = `${type === 'image' ? 'Only 4 images allowed' : 'Only 1 video clip allowed'}`;
+  return displayNotification();
+}
+
 let imageArray = [];
 let videoArray = [];
 
+function seperateFiles(uploadedFiles) {
+  imageArray = uploadedFiles.filter(file => file.type.includes('image'));
+  videoArray = uploadedFiles.filter(file => file.type.includes('video'));
+  if (imageArray.length && previewImgDiv.style.display === 'none') {
+    // if (!videoTag.innerHTML.includes('source')) videoPreviewDiv.style.display = 'none';
+    previewImgDiv.style.display = 'grid';
+  }
+  if (videoArray.length && videoPreviewDiv.style.display === 'none') {
+    // if (previewImgDiv.innerHTML === '') previewImgDiv.style.display = 'none';
+    videoPreviewDiv.style.display = 'block';
+  }
+}
+
 fileUploadInput.addEventListener('change', (event) => {
   const allFilesReference = [...event.target.files];
-  const uploadedFiles = [...event.target.files];
-
+  previewImgDiv.innerHTML = '';
+  seperateFiles(allFilesReference);
   for (let i = 0; i < allFilesReference.length; i++) {
     const reader = new FileReader();
     const element = allFilesReference[i];
     reader.onload = () => {
-      if (previewImgDiv.style.display === 'none') previewImgDiv.style.display = 'grid';
+      if (imageArray.length > 4) {
+        reader.abort();
+        return fileCheckFailure('image');
+      }
+      if (videoArray.length > 1) {
+        reader.abort();
+        return fileCheckFailure('video');
+      }
+      const blob = reader.result;
 
-      imageArray = uploadedFiles.filter(file => file.type.includes('image'));
-      videoArray = uploadedFiles.filter(file => file.type.includes('video'));
-      const img = `<img src='${reader.result}' alt='image'>`;
-      previewImgDiv.innerHTML += img;
+      if (blob.includes('image')) {
+        const img = `<img src='${reader.result}' alt='image'>`;
+        previewImgDiv.innerHTML += img;
+      }
+
+      if (blob.includes('video')) {
+        videoSource.setAttribute('src', reader.result);
+        videoTag.appendChild(videoSource);
+      }
     }
     reader.readAsDataURL(element);
   }
@@ -355,7 +478,7 @@ function incidentFormCheck() {
 }
 
 createIncidentBtn.addEventListener('click', () => {
-  console.log('called')
+  showLoader();
   const { comment = '', reportType = '', location = '', title = '' } = incidentFormCheck();
   const incidentForm = new FormData();
   incidentForm.append('comment', comment);
@@ -375,14 +498,10 @@ createIncidentBtn.addEventListener('click', () => {
   fetch(`${apiVersion}incident/create`, options)
     .then(handleResponse)
     .then(res => {
-      console.log(res);
       notificationTitle.innerText = 'Incident successfully reported';
       notificationTextElement.innerText = '';
       createIncidentForm.style.display = 'none';
       displayNotification();
-      // if (arrayOfRecentlyCreatedIncidents.length === 4) arrayOfRecentlyCreatedIncidents.splice(3, 1);
-      // arrayOfRecentlyCreatedIncidents.unshift(res.data);
-      // console.log(arrayOfRecentlyCreatedIncidents);
     })
     .catch(err => {
       notificationTitle.innerText = 'An error occured';
@@ -392,6 +511,7 @@ createIncidentBtn.addEventListener('click', () => {
 });
 
 window.onload = () => {
+  showLoader();
   const options = {
     method: 'GET',
     headers: {
@@ -403,10 +523,14 @@ window.onload = () => {
   fetch(`${apiVersion}user/incidents`, options)
     .then(handleResponse)
     .then(res => {
-      console.log(res);
       listOfAllIncidents = res.data;
       filteredList = listOfAllIncidents.reverse();
       updateView(filteredList);
+      loader.style.display = 'none';
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      notificationTitle.innerText = 'An errorhas occured';
+      notificationTextElement.innerText = err.error.error;
+      displayNotification();
+    });
 }

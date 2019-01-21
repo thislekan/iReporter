@@ -109,9 +109,9 @@ label{
     letter-spacing: .2rem;
     font-size: 1.2rem;
 }
-/* .conditions-div label{
-  margin: 0 0 0 1rem;
-} */
+#loader-div{
+  display: none;
+}
 .notification-div{
   position: fixed;
     height: 300px;

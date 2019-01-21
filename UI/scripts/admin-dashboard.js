@@ -18,6 +18,10 @@ const cancelSearchBtn = document.getElementById('cancel-search-btn');
 const mapDiv = document.querySelector('.map');
 const detailsDivCloser = document.getElementById('close-details-div');
 const detailsImageDiv = document.querySelector('.image-div');
+const loader = document.getElementById('loader-div');
+const videoPreviewDiv = document.querySelector('.preview-video');
+const videoTag = document.getElementById('video');
+const videoSource = document.createElement('source');
 
 let listOfAllIncidents = [];
 let filteredList = []
@@ -27,22 +31,35 @@ searchDiv.style.display = 'none'
 filterListbtn.style.display = 'none';
 searchTermInput.style.display = 'none';
 cancelSearchBtn.style.display = 'none';
+detailsImageDiv.style.display = 'none';
+videoPreviewDiv.style.display = 'none';
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';
 });
 
-detailsDivCloser.addEventListener('click', () => moreDetailsDiv.style.display = 'none');
+function showLoader() {
+  loader.style.display = 'flex';
+}
+
+detailsDivCloser.addEventListener('click', () => {
+  detailsImageDiv.style.display = 'none';
+  videoPreviewDiv.style.display = 'none'
+  moreDetailsDiv.style.display = 'none';
+});
 
 function displayNotification() {
+  if (loader.style.display === 'flex') loader.style.display = 'none';
   notificationBox.style.display = 'flex';
 }
 
 function showFilterDiv() {
   searchDiv.style.display = 'flex';
+  searchDiv.style.height = '7rem';
 }
 
 function showSearchTermInput() {
+  searchDiv.style.height = '13.25rem'
   filterListbtn.style.display = 'initial';
   cancelSearchBtn.style.display = 'initial';
   searchTermInput.style.display = 'initial';
@@ -131,11 +148,19 @@ function navigateToEditPage(index) {
 }
 
 function insertImages(params) {
+  detailsImageDiv.style.display = 'grid';
   for (let i = 0; i < params.length; i++) {
     const element = params[i];
     const img = `<img class='more-details-img' src='${element}'>`;
     detailsImageDiv.innerHTML += img;
   }
+}
+
+function insertVideo(params) {
+  console.log('fired', params);
+  videoPreviewDiv.style.display = 'block';
+  videoSource.setAttribute('src', params);
+  videoTag.appendChild(videoSource);
 }
 
 function expandIncident(index) {
@@ -146,12 +171,19 @@ function expandIncident(index) {
     if (incident.images && incident.images.length) {
       insertImages(incident.images);
     }
+    if (incident.videos && incident.videos.length) {
+      insertVideo(incident.videos[0]);
+    }
     moreDetailsDiv.style.display = 'block';
   } else {
     incident = filteredList[index];
+    console.log(incident);
     convertAddressToGeocode(incident.location);
     if (incident.images && incident.images.length) {
       insertImages(incident.images);
+    }
+    if (incident.videos && incident.videos.length) {
+      insertVideo(incident.videos[0]);
     }
     moreDetailsDiv.style.display = 'block';
   }
@@ -186,6 +218,9 @@ function cancelSearch(params) {
   incidentTitleElement.innerText = params;
   updateView(filteredList);
   searchDiv.style.display = 'none';
+  filterListbtn.style.display = 'none';
+  cancelSearchBtn.style.display = 'none';
+  searchTermInput.style.display = 'none';
 }
 
 filterListbtn.addEventListener('click', () => {
@@ -210,11 +245,13 @@ filterListbtn.addEventListener('click', () => {
 cancelSearchBtn.addEventListener('click', () => cancelSearch(prevFilteredListTitle));
 
 window.onload = () => {
+  showLoader();
   fetch(`${apiVersion}incidents`)
     .then(handleResponse)
     .then(res => {
       listOfAllIncidents = res.data.incidents;
       filteredList = listOfAllIncidents.reverse();
+      loader.style.display = 'none';
       updateView(filteredList);
     })
     .catch(err => {

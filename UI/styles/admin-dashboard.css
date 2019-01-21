@@ -102,7 +102,7 @@ select, input{
 }
 #incident-view{
     width: 100%;
-    margin-top: .5rem;
+    /* margin-top: .5rem; */
 }
 h4{
     color: #1d394a;
@@ -298,6 +298,7 @@ textarea{
     z-index: 2;
     display: none;
     box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.5);
+    overflow-y: scroll;
 }
 .map{
     position: relative;
@@ -318,6 +319,20 @@ textarea{
     color: white;
     letter-spacing: 1px;
     font-family: 'Roboto'
+}
+#loader-div{
+    display: none;
+}
+.preview-video{
+    height: 24rem;
+    width: 100%;
+    margin-top: 2rem;
+}
+video{
+    height: 24rem;
+    width: 100%;
+    object-position: center;
+    object-fit: scale-down;
 }
 @media only screen and (min-device-width: 700px){
     .more-details-div{
