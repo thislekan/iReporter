@@ -47,8 +47,9 @@ const cancelSearchBtn = document.getElementById('cancel-search-btn');
 
 const loader = document.getElementById('loader-div');
 const videoPreviewDiv = document.querySelector('.preview-video');
-const videoTag = document.getElementById('video');
-const videoSource = document.createElement('source');
+// const videoTag = document.getElementById('video');
+// const videoSource = document.createElement('source');
+const videoDivForIncidentDetails = document.getElementById('incident-video-div');
 
 incidentIdentifier.innerText = 'All reported incidents';
 let listOfAllIncidents = [];
@@ -78,12 +79,24 @@ function showSearchTermInput() {
   searchTermInput.style.display = 'initial';
 }
 
+function resetCreateForm() {
+  reportTypeInput.value = '';
+  commentInput.value = '';
+  locationInput.value = '';
+  titleInput.value = '';
+  fileUploadInput.value = '';
+  previewImgDiv.innerHTML = '';
+  videoPreviewDiv.innerHTML = '';
+  videoPreviewDiv.style.display = 'none';
+}
+
 closeDetailedIncidentDiv.addEventListener('click', () => {
   incidentDetailsModal.style.display = 'none';
   overlayDiv.style.display = 'none';
 });
 
 createIncidentFormCloseButton.addEventListener('click', () => {
+  resetCreateForm();
   createIncidentForm.style.display = 'none';
   incidentModalCreateButton.style.display = 'flex';
 });
@@ -92,11 +105,6 @@ incidentModalCreateButton.addEventListener('click', () => {
   createIncidentForm.style.display = 'block';
   incidentModalCreateButton.style.display = 'none'
 });
-
-function toggleVideoDiv(params) {
-  if (params && params === 'hide') return videoPreviewDiv.style.display = 'none';
-  return videoPreviewDiv.style.display = 'block';
-}
 
 sortIncidentByStatus.addEventListener('change', () => {
   switch (sortIncidentByStatus.value) {
@@ -199,14 +207,20 @@ function dateCreated(date) {
 
 function updateView(params) {
   incidentsViewDiv.innerHTML = '';
+  let spanElement;
   for (let i = 0; i < params.length; i++) {
     const element = params[i];
     const date = dateCreated(element.createdOn);
+    if (element.type === 'red-flag') {
+      spanElement = '<span class="fa fa-flag"></span>';
+    } else {
+      spanElement = '<span class="fa fa-stop-circle-o"></span>';
+    }
 
     const incident =
       `<div class='report-body-wrapper'>
     <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>ID: </h4></div><p>${element.id}</p></div>
-    <div class='report-details'><div class="incident-intro"><span class="fa fa-check"></span><h4>Type: </h4></div><p>${(element.type === 'red-flag') ? element.type + '<span class="fa fa-flag"></span>' : element.type + "<span class='fa fa-stop-circle-o'></span>"}</p></div>
+    <div class='report-details'><div class="incident-intro"><span class="fa fa-check"></span><h4>Type: </h4></div><p>${element.type} ${spanElement}</p></div>
     <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>Date: </h4></div><p>${moment(date).format('MMMM Do YYYY, h:mm:ss a')}</p></div>
     <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>Status: </h4></div><p>${element.status}</p></div>
     <div class='report-details'><div class='incident-intro'><span class='fa fa-check'></span><h4>Location: </h4></div><p>${element.location}</p></div>
@@ -224,12 +238,10 @@ function convertAddressToGeocode(location) {
     fetch(url)
       .then(handleResponse)
       .then(res => {
-        console.log(res)
         const { lat, lng } = res.results[0].geometry.location;
         mapDiv.innerHTML = `<iframe width="100%" height="100%" frameborder="0" style="border:0; position:absolute;" src="https://www.google.com/maps/embed/v1/search?q=${lat}+${lng}&key=AIzaSyD7vyWaUCS6qMoPOcAhhO_TI1mbqAAWJlM" allowfullscreen></iframe>`;
       })
       .catch(err => {
-        console.log(err);
         notificationTitle.innerText = err.status;
         notificationTextElement.innerText = err.error_message;
         displayNotification();
@@ -240,6 +252,7 @@ function convertAddressToGeocode(location) {
 }
 
 function showIncidentDetails(index) {
+  incidentImageDiv.innerHTML = '';
   const incident = filteredList[index];
   const { type, id, location, status, comment, title, createdOn } = incident;
   incidentComment.value = comment;
@@ -254,8 +267,15 @@ function showIncidentDetails(index) {
       const imgTag = `<img src="${element}" alt='image'>`;
       incidentImageDiv.innerHTML += imgTag;
     });
+  }
+
+  if (incident.videos && incident.videos.length) {
+    videoDivForIncidentDetails.innerHTML = '';
+    const clip = incident.videos[0]
+    const videoElement = `<video controls><source src='${clip}'></source></video>`;
+    videoDivForIncidentDetails.innerHTML = videoElement;
   } else {
-    imageAndVideoParentDiv.style.display = 'none';
+    videoDivForIncidentDetails.innerHTML = '';
   }
 
   incidentDetailsModal.style.display = 'flex';
@@ -355,14 +375,13 @@ let imageArray = [];
 let videoArray = [];
 
 function seperateFiles(uploadedFiles) {
+  videoPreviewDiv.style.display = 'none';
   imageArray = uploadedFiles.filter(file => file.type.includes('image'));
   videoArray = uploadedFiles.filter(file => file.type.includes('video'));
-  if (imageArray.length && previewImgDiv.style.display === 'none') {
-    // if (!videoTag.innerHTML.includes('source')) videoPreviewDiv.style.display = 'none';
+  if (imageArray.length) {
     previewImgDiv.style.display = 'grid';
   }
-  if (videoArray.length && videoPreviewDiv.style.display === 'none') {
-    // if (previewImgDiv.innerHTML === '') previewImgDiv.style.display = 'none';
+  if (videoArray.length) {
     videoPreviewDiv.style.display = 'block';
   }
 }
@@ -370,29 +389,26 @@ function seperateFiles(uploadedFiles) {
 fileUploadInput.addEventListener('change', (event) => {
   const allFilesReference = [...event.target.files];
   previewImgDiv.innerHTML = '';
+  videoPreviewDiv.innerHTML = '';
   seperateFiles(allFilesReference);
+  if (imageArray.length > 4) {
+    return fileCheckFailure('image');
+  }
+  if (videoArray.length > 1) {
+    return fileCheckFailure('video');
+  }
   for (let i = 0; i < allFilesReference.length; i++) {
     const reader = new FileReader();
     const element = allFilesReference[i];
     reader.onload = () => {
-      if (imageArray.length > 4) {
-        reader.abort();
-        return fileCheckFailure('image');
-      }
-      if (videoArray.length > 1) {
-        reader.abort();
-        return fileCheckFailure('video');
-      }
       const blob = reader.result;
-
       if (blob.includes('image')) {
         const img = `<img src='${reader.result}' alt='image'>`;
         previewImgDiv.innerHTML += img;
       }
 
       if (blob.includes('video')) {
-        videoSource.setAttribute('src', reader.result);
-        videoTag.appendChild(videoSource);
+        videoPreviewDiv.innerHTML = `<video controls><source src='${reader.result}'></source></video>`;
       }
     }
     reader.readAsDataURL(element);

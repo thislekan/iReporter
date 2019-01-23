@@ -157,7 +157,6 @@ function insertImages(params) {
 }
 
 function insertVideo(params) {
-  console.log('fired', params);
   videoPreviewDiv.style.display = 'block';
   videoSource.setAttribute('src', params);
   videoTag.appendChild(videoSource);
@@ -177,7 +176,6 @@ function expandIncident(index) {
     moreDetailsDiv.style.display = 'block';
   } else {
     incident = filteredList[index];
-    console.log(incident);
     convertAddressToGeocode(incident.location);
     if (incident.images && incident.images.length) {
       insertImages(incident.images);
