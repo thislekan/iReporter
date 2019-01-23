@@ -14,8 +14,11 @@ const notificationBoxCloser = document.getElementById('close-notification');
 const notificationTextElement = notificationBox.querySelector('p');
 const notificationTitle = notificationBox.querySelector('h3');
 const loader = document.getElementById('loader-div');
+const logOutBtn = document.getElementById('log-out');
 
 let reportType;
+
+logOutBtn.addEventListener('click', () => location.href = '../../../index.html');
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';

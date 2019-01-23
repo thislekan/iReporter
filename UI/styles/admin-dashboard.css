@@ -68,8 +68,8 @@ nav{
     background-color: white;
     color: #cf4241;
     position: absolute;
-    top: -1rem;
-    right: -.5rem;
+    top: 0rem;
+    right: 0rem;
     border: 1px solid #cf4241;
     z-index: 3;
 }
@@ -290,7 +290,7 @@ textarea{
     font-family: 'Roboto'
 }
 .more-details-div{
-    height: 43rem;
+    /* height: 43rem; */
     padding: 1rem;
     position: fixed;
     width: calc(100% - 4rem);
