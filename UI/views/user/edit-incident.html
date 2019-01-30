@@ -7,6 +7,7 @@
   <title> iReporter || User-Edit </title>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../styles/loader.css">
   <link rel="stylesheet" href="../../styles/edit-incident.css">
 </head>
 
@@ -14,14 +15,19 @@
   <header>
     <nav>
       <div class="navigation__wrapper">
-        <div><a href="user-dashboard.html">Dashboard</a></div>
-        <div><a href="view-reports.html">View Reports</a></div>
-        <div><button id="log-out">Log Out</button></div>
+        <div><a href="../../../index.html" id="ireporter-logo">iReporter</a></div>
+        <div>
+          <div><a href="view-reports.html">View Reports</a></div>
+          <div><button id="log-out">Log Out</button></div>
+        </div>
       </div>
     </nav>
   </header>
   <div id="body">
     <div class="padded-body">
+      <div class="loader-div" id="loader-div">
+        <div class="loader"></div>
+      </div>
       <div class="notification">
         <div class="notification__body" id="notification-div">
           <div class="close-notification" id="close-notification">
@@ -38,25 +44,40 @@
             <div class="edit__body">
               <div class="edit__body__wrapper">
                 <div class="report-details">
-                  <h4>ID: </h4>
-                  <p id="incident-id"></p>
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Title: </h4>
+                  </div>
+                  <p id="incident-title"></p>
                 </div>
+                <!-- <div class="report-details">
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>ID: </h4>
+                  </div>
+                  <p id="incident-id"></p>
+                </div> -->
                 <div class="report-details">
-                  <h4>Type: </h4>
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Type: </h4>
+                  </div>
                   <p id="incident-type"></p>
                 </div>
                 <div class="report-details">
-                  <h4>Created: </h4>
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Created: </h4>
+                  </div>
                   <p id="incident-date"></p>
                 </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
+                <!-- <div class="report-details">
+                  <div class="incident-intro">
+                    <span class="fa fa-check"></span>
+                    <h4>Status: </h4>
+                  </div>
                   <p id="incident-status"></p>
-                </div>
-                <div class="report-details">
-                  <h4>Title: </h4>
-                  <p id="incident-title"></p>
-                </div>
+                </div> -->
                 <div class="location-div">
                   <div class="comment-div">
                     <h4>Location: </h4>

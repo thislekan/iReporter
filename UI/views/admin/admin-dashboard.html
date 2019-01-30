@@ -7,6 +7,7 @@
   <title> iReporter || Admin-Dashboard </title>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../styles/loader.css">
   <link rel="stylesheet" href="../../styles/admin-dashboard.css">
 </head>
 
@@ -14,484 +15,81 @@
   <header>
     <nav>
       <div class="navigation__wrapper">
-        <!-- <div><a href="admin-interventions.html">Interventions</a></div>
-        <div><a href="admin-edit.html">Red flags</a></div> -->
+        <div><a href="../../../index.html" id="ireporter-logo">iReoprter</a></div>
         <div><button id="log-out">Log Out</button></div>
       </div>
     </nav>
   </header>
   <div id="body">
     <div class="padded-body">
+      <div class="loader-div" id="loader-div">
+        <div class="loader"></div>
+      </div>
       <p id="welcome-text">Welcome to your dashboard.</p>
-      <div class="notification">
-        <div class="notification__body">
-          <div class="close-notification">
-            <span>x</span>
+      <div class="more-details-div">
+        <div class="close-notification" id="close-details-div">
+          <span class="fa fa-close"></span>
+        </div>
+        <div class="details-wrapper">
+          <div class="map"></div>
+          <div>
+            <div class="media-div">
+              <div class="preview-video">
+                <video controls id="video"></video>
+              </div>
+              <div class="image-div"></div>
+            </div>
           </div>
+        </div>
+      </div>
+      <div class="notification">
+        <div class="notification__body" id="notification-div">
+          <div class="close-notification" id="close-notification">
+            <span class="fa fa-close"></span>
+          </div>
+          <h3></h3>
           <p></p>
         </div>
       </div>
       <div class="body__content">
-        <h2>Search for an incident</h2>
-        <div id="search-div">
-          <label for="select view">Select incident</label>
-          <select name="select view" id="incident-view">
-            <option value="red-flag">Red flags</option>
-            <option value="intervention">Interventions</option>
-          </select>
+        <div class="control">
+          <div id="search-div">
+            <label for="select view">Sort incident</label>
+            <select name="select view" id="incident-view">
+              <option value="">Select an option</option>
+              <option value="all">All</option>
+              <option value="red-flag">Red flags</option>
+              <option value="intervention">Intervention</option>
+              <option value="draft">Draft</option>
+              <option value="rejected">Rejected</option>
+              <option value="resolved">Resolved</option>
+              <option value="under-investigation">Under Investigation</option>
+            </select>
+          </div>
+          <div id="filter-div">
+            <label for="filter list">Search Incident</label>
+            <select name="filter list" id="filter-options">
+              <option value="">Select option</option>
+              <option value="id">Incident ID</option>
+              <!-- <option value="createdOn">Date</option> -->
+              <option value="location">Location</option>
+            </select>
+            <input type="text" name="" id="filter-value" placeholder="Please enter your search term here">
+            <div class="search-btns">
+              <button id="filter-list-btn">Search</button>
+              <button id='cancel-search-btn'>Clear Search</button>
+            </div>
+          </div>
         </div>
         <div class="recently-created">
           <h2 id="incident-title"></h2>
-          <div class="list-of-reports">
-            <div id="red-flag-list">
-              <div class="report-body-wrapper red-flag">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Red Flag <span class="fa fa-flag"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-              <div class="report-body-wrapper red-flag">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Red Flag <span class="fa fa-flag"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-              <div class="report-body-wrapper red-flag">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Red Flag <span class="fa fa-flag"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-              <div class="report-body-wrapper red-flag">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Red Flag <span class="fa fa-flag"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-            </div>
-            <div id="intervention-list">
-              <div class="report-body-wrapper intervention">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Intervention <span class="fa fa-stop-circle-o"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-              <div class="report-body-wrapper intervention">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Intervention <span class="fa fa-stop-circle-o"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-              <div class="report-body-wrapper intervention">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Intervention <span class="fa fa-stop-circle-o"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-              <div class="report-body-wrapper intervention">
-                <div class="report-details">
-                  <h4>Creator ID: </h4>
-                  <p class="creator-id">90078</p>
-                </div>
-                <div class="report-details">
-                  <h4>ID: </h4>
-                  <p class="incident-id">09234</p>
-                </div>
-                <div class="report-details">
-                  <h4>Type: </h4>
-                  <p>Intervention <span class="fa fa-stop-circle-o"></span></p>
-                </div>
-                <div class="report-details">
-                  <h4>Created: </h4>
-                  <p>23/12/2018</p>
-                </div>
-                <div class="report-details">
-                  <h4>Status: </h4>
-                  <p>Pending</p>
-                </div>
-                <div class="location-div">
-                  <div class="report-details">
-                    <h4>Location: </h4>
-                    <p>Address or Coordinates</p>
-                  </div>
-                  <div class="display-btn-div">
-                    <button class="view-map-btn view-btns">View Map</button>
-                    <button class="view-images-btn view-btns">View Images</button>
-                    <button class="view-comments-btn view-btns">View Comments</button>
-                    <button class="view-videos-btn view-btns">View Videos</button>
-                  </div>
-                  <div class="map">
-                    <div class="map-region">map region</div>
-                  </div>
-                  <div class="comment-div">
-                    <textarea name="" id=""></textarea>
-                  </div>
-                </div>
-                <div class="image-and-video-div">
-                  <h4>Images or Videos: </h4>
-                  <div class="content-wrapper">
-                    <!-- multiple images here -->
-                    <div class="image-container">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                      <img src="../../images/quiet.jpg" alt="">
-                    </div>
-                  </div>
-                </div>
-                <div class="edit-btn-div">
-                  <button class="edit-btn">Edit Incident</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="list-of-reports"></div>
         </div>
       </div>
     </div>
   </div>
+  <script src="../../scripts/utils.js"></script>
+  <script src="../../scripts/moment.js"></script>
   <script src="../../scripts/admin-dashboard.js"></script>
 </body>
 

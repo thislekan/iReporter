@@ -14,16 +14,36 @@ const notificationBox = document.getElementById('notification-div');
 const notificationBoxCloser = document.getElementById('close-notification');
 const notificationTextElement = notificationBox.querySelector('p');
 const notificationTitle = notificationBox.querySelector('h3');
+const loader = document.getElementById('loader-div');
+const logOutBtn = document.getElementById('log-out');
 
 let reportType;
+
+logOutBtn.addEventListener('click', () => location.href = '../../../index.html');
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';
 });
 
+function showLoader() {
+  loader.style.display = 'flex';
+}
+
 function displayNotification() {
+  if (loader.style.display === 'flex') loader.style.display = 'none';
   notificationBox.style.display = 'flex';
 }
+
+incidentComment.addEventListener('keyup', (e) => {
+  const comment = e.target.value;
+  if (comment.length < 150) {
+    incidentComment.style.border = '1px solid rgba(29, 57, 74, 0.1)';
+    editCommentButton.disabled = false;
+  } else {
+    incidentComment.style.border = '1px solid red';
+    editCommentButton.disabled = true;
+  }
+});
 
 editCommentButton.addEventListener('click', () => {
   if (editCommentButton.innerText === 'Post Comment') {
@@ -46,15 +66,16 @@ editLocationButton.addEventListener('click', () => {
 function fillInValuesForReport(params) {
   const { type, id, location, status, comment, title, createdOn } = params.data;
   incidentComment.value = comment;
-  incidentId.innerText = id;
+  // incidentId.innerText = id;
   incidentLocation.value = location;
   incidentType.innerHTML = `${(type === 'red-flag') ? type + '<span class="fa fa-flag"></span>' : type + "<span class='fa fa-stop-circle-o'></span>"}`;
-  incidentStatus.innerText = status;
+  // incidentStatus.innerText = status;
   incidentDate.innerText = moment(Number(createdOn)).format('MMMM Do YYYY, h:mm:ss a');
   incidentTitle.innerText = title;
 }
 
 function updateLocation() {
+  showLoader();
   const id = sessionStorage.getItem('incident');
   const location = incidentLocation.value.trim();
   const options = {
@@ -69,14 +90,12 @@ function updateLocation() {
   fetch(`${apiVersion}${reportType}/location/${id}`, options)
     .then(handleResponse)
     .then(res => {
-      console.log(res);
       notificationTitle.innerText = 'Location successfully updated';
       displayNotification();
       incidentLocation.disabled = true;
       editLocationButton.innerText = 'Edit Location';
     })
     .catch(err => {
-      console.log(err);
       notificationTitle.innerText = 'An error has occured';
       notificationTextElement.innerText = err.error.error;
       displayNotification();
@@ -84,6 +103,7 @@ function updateLocation() {
 }
 
 function updateComment() {
+  showLoader();
   const id = sessionStorage.getItem('incident');
   const comment = incidentComment.value.trim();
   const options = {
@@ -98,14 +118,12 @@ function updateComment() {
   fetch(`${apiVersion}${reportType}/comment/${id}`, options)
     .then(handleResponse)
     .then(res => {
-      console.log(res);
       notificationTitle.innerText = 'Comment successfully updated';
       displayNotification();
       incidentComment.disabled = true;
       editCommentButton.innerText = 'Edit Comment';
     })
     .catch(err => {
-      console.log(err);
       notificationTitle.innerText = 'An error has occured';
       notificationTextElement.innerText = err.error.error;
       displayNotification();
@@ -113,6 +131,7 @@ function updateComment() {
 }
 
 window.onload = () => {
+  showLoader();
   const id = sessionStorage.getItem('incident');
   const options = {
     method: 'GET',
@@ -125,12 +144,11 @@ window.onload = () => {
   fetch(`${apiVersion}incident/${id}`, options)
     .then(handleResponse)
     .then(res => {
-      console.log(res);
       reportType = res.data.type;
-      fillInValuesForReport(res)
+      fillInValuesForReport(res);
+      loader.style.display = 'none';
     })
     .catch(err => {
-      console.log(err);
       notificationTitle.innerText = 'An error has occured';
       notificationTextElement.innerText = err.error.error;
       displayNotification();

@@ -8,12 +8,18 @@ const notificationTextElement = notificationBox.querySelector('p');
 const notificationTitle = notificationBox.querySelector('h5');
 
 const loginButton = document.getElementById('login-btn');
+const loader = document.getElementById('loader-div');
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';
 });
 
+function showLoader() {
+  loader.style.display = 'flex';
+}
+
 function displayNotification() {
+  if (loader.style.display === 'flex') loader.style.display = 'none';
   notificationBox.style.display = 'flex';
 }
 
@@ -42,6 +48,7 @@ function verifyRequiredFields() {
 }
 
 loginButton.addEventListener('click', () => {
+  showLoader();
   const { email = '', password = '' } = verifyRequiredFields();
   const options = {
     method: 'POST',
@@ -58,14 +65,12 @@ loginButton.addEventListener('click', () => {
       sessionStorage.setItem('userId', user.id);
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('firstName', user.firstName);
-      notificationTitle.innerText = 'User successfully logged in.';
-      notificationTextElement.innerText = `You'll be redirected to your homepage shortly.`;
-      displayNotification();
       emailInput.value = '';
       passwordInput.value = '';
       setTimeout(() => {
-        if (user.isAdmin) return location.href = '../views/admin/admin-dsahboard.html';
-        location.href = '../views/user/user-dashboard.html'
+        loader.style.display = 'none';
+        if (user.isAdmin) return location.href = '../views/admin/admin-dashboard.html';
+        location.href = '../views/user/view-reports.html'
       }, 2500);
     })
     .catch(err => {

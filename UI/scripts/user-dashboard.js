@@ -39,6 +39,28 @@ allDeleteButtons.forEach(element => {
   });
 });
 
+let imageArray = [];
+let videoArray = [];
+
+fileUploadInput.addEventListener('change', (event) => {
+  console.log('yellow');
+  var reader = new FileReader();
+  reader.onload = function () {
+    if (event.target.files.length <= 4) {
+      const uploadedFiles = [...event.target.files];
+      imageArray = uploadedFiles.filter(file => file.type.includes('image'));
+    } else {
+      reader.abort();
+      notificationTitle.innerText = 'An error has occured';
+      notificationTextElement.innerText = 'Maximum of 4 images allowed';
+      fileUploadInput.value = '';
+      displayNotification();
+    }
+    // console.log(reader.result);
+  };
+  reader.readAsDataURL(event.target.files[0]);
+})
+
 commentInput.addEventListener('keyup', (e) => {
   const comment = e.target.value;
   if (comment.length < 150) {
@@ -119,31 +141,22 @@ function incidentFormCheck() {
   return { reportType, comment, location, title }
 }
 
-// function convertAddressToGeocode(location) {
-//   const writtenLocation = encodeURI(location);
-//   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${writtenLocation}&key=AIzaSyAvH4cf6gnzajQnQJh5IjDR_WcejL9L6p0`;
-//   fetch(url)
-//     .then(handleResponse)
-//     .then(res => {
-//       console.log(res)
-//       areaGeoCode = res.results[0].geometry.location;
-//     })
-//     .catch(err => {
-//       notificationTitle.innerText = err.status;
-//       notificationTextElement.innerText = err.error_message;
-//       displayNotification();
-//     });
-// }
-
 createIncidentBtn.addEventListener('click', () => {
   console.log('called')
   const { comment = '', reportType = '', location = '', title = '' } = incidentFormCheck();
-  // convertAddressToGeocode(location);
+  const incidentForm = new FormData();
+  incidentForm.append('comment', comment);
+  incidentForm.append('location', location);
+  incidentForm.append('type', reportType);
+  incidentForm.append('title', title);
+  imageArray.forEach((image, index) => incidentForm.append(`images ${index}`, image));
+  // incidentForm.append('images', [fileUploadInput.files[0], fileUploadInput.files[1]]);
   const options = {
     method: 'POST',
-    body: JSON.stringify({ location, comment, type: reportType, title }),
+    // body: JSON.stringify({ location, comment, type: reportType, title }),
+    body: incidentForm,
     headers: {
-      'Content-Type': 'application/json',
+      // 'Content-Type': 'application/json',
       'x-auth': sessionStorage.getItem('token')
     }
   }

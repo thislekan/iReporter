@@ -12,12 +12,18 @@ const notificationTextElement = notificationBox.querySelector('p');
 const notificationTitle = notificationBox.querySelector('h5');
 
 const signUpButton = document.getElementById('signup-btn');
+const loader = document.getElementById('loader-div');
 
 notificationBoxCloser.addEventListener('click', () => {
   notificationBox.style.display = 'none';
 });
 
+function showLoader() {
+  loader.style.display = 'flex';
+}
+
 function displayNotification() {
+  if (loader.style.display === 'flex') loader.style.display = 'none';
   notificationBox.style.display = 'flex';
 }
 
@@ -56,6 +62,7 @@ function verifyRequiredFields() {
 }
 
 signUpButton.addEventListener('click', () => {
+  showLoader()
   const { lastName, firstName, email, password } = verifyRequiredFields();
   const options = {
     method: 'POST',
@@ -70,11 +77,9 @@ signUpButton.addEventListener('click', () => {
       const { user, token } = res.data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('firstName', `${user.firstName}`);
-      notificationTitle.innerText = 'User successfully created.'
-      notificationTextElement.innerText = `You'll be redirected to your home page shortly.`;
-      displayNotification();
       emptyInputFields();
       setTimeout(() => {
+        loader.style.display = 'none';
         location.href = '../views/user/user-dashboard.html';
       }, 2000);
     })
