@@ -5,6 +5,7 @@ import dbIncidentHandler from '../controllers/dbIncidentHandler';
 import incidentInputValidator from '../middlewares/incidentInputValidator';
 import userInputValidator from '../middlewares/userInputValidator';
 import authMiddleware from '../middlewares/authMiddleware';
+import mediaMiddleware from '../middlewares/mediaMiddleware';
 
 const app = express.Router();
 const apiVersion = '/api/v2/';
@@ -29,7 +30,9 @@ app
   .route(`${apiVersion}incident/create`)
   .post(
     authMiddleware.validateToken,
+    mediaMiddleware.multerCheck,
     incidentInputValidator.createIncidentQueryValidator,
+    mediaMiddleware.returnedFiles,
     dbIncidentHandler.createIncident,
   );
 
