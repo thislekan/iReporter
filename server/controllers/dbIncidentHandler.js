@@ -25,12 +25,12 @@ function responseMessage(res, statusCode, message, type) {
 
 export default {
   createIncident: async (req, res) => {
-    const { userid } = res.locals;
+    const { userid, imageUrl, videoUrl } = res.locals;
     const {
       type, location, comment, title, status = 'draft',
     } = req.body;
     const text = `INSERT INTO
-    incidents(id, "createdBy", "createdOn", type, location, status, comment, title) VALUES($1, $2, $3, $4, $5,$6, $7, $8)
+    incidents(id, "createdBy", "createdOn", type, location, status, comment, title, images, videos) VALUES($1, $2, $3, $4, $5,$6, $7, $8, $9, $10)
     returning *`;
 
     const values = [
@@ -42,6 +42,8 @@ export default {
       status.trim(),
       comment.trim(),
       title.trim(),
+      imageUrl,
+      videoUrl,
     ];
 
     try {
@@ -102,11 +104,18 @@ export default {
     }
   },
   getSingleIncident: async (req, res) => {
-    const { userid } = res.locals;
+    let text;
+    let values;
+    const { userid, level } = res.locals;
     const { id } = req.params;
-    const text = 'SELECT * FROM incidents where id = $1 AND "createdBy" = $2';
-    const values = [id, userid];
-
+    if (level === 'admin') {
+      text = 'SELECT * FROM incidents where id = $1';
+      values = [id];
+    }
+    if (level === 'user') {
+      text = 'SELECT * FROM incidents where id = $1 AND "createdBy" = $2';
+      values = [id, userid];
+    }
     try {
       const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) {
