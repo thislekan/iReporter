@@ -131,10 +131,10 @@ export default {
   editRedFlagComment: async (req, res) => {
     const { userid } = res.locals;
     const { id } = req.params;
-    const { comment } = req.body;
+    const { comment, type } = req.body;
     const text = `
     UPDATE incidents
-      SET comment=$3, "updatedOn"=$4
+      SET comment=$3, "updatedOn"=$4, "type"=$5
       WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'red-flag' returning *
     `;
     try {
@@ -143,6 +143,7 @@ export default {
         userid,
         comment.trim(),
         new Date().getTime(),
+        type.trim()
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) return rowCountCheck(res, rowCount);
@@ -154,10 +155,10 @@ export default {
   editInterventionComment: async (req, res) => {
     const { userid } = res.locals;
     const { id } = req.params;
-    const { comment } = req.body;
+    const { comment, type } = req.body;
     const text = `
     UPDATE incidents
-      SET comment=$3, "updatedOn"=$4
+      SET comment=$3, "updatedOn"=$4, "type"=$5
       WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'intervention' returning *
     `;
     try {
@@ -166,6 +167,7 @@ export default {
         userid,
         comment.trim(),
         new Date().getTime(),
+        type.trim(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
@@ -177,10 +179,10 @@ export default {
   editRedFlagLocation: async (req, res) => {
     const { userid } = res.locals;
     const { id } = req.params;
-    const { location } = req.body;
+    const { location, type } = req.body;
     const text = `
     UPDATE incidents
-      SET location=$3, "updatedOn"=$4
+      SET location=$3, "updatedOn"=$4, "type"=$5
       WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'red-flag' returning *
     `;
     try {
@@ -189,6 +191,7 @@ export default {
         userid,
         location.trim(),
         new Date().getTime(),
+        type.trim()
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
@@ -200,10 +203,10 @@ export default {
   editInterventionLocation: async (req, res) => {
     const { userid } = res.locals;
     const { id } = req.params;
-    const { location } = req.body;
+    const { location, type } = req.body;
     const text = `
     UPDATE incidents
-      SET location=$3, "updatedOn"=$4
+      SET location=$3, "updatedOn"=$4, "type"=$5
       WHERE id=$1 AND "createdBy" = $2 AND status = 'draft' AND type = 'intervention' returning *
     `;
     try {
@@ -212,6 +215,7 @@ export default {
         userid,
         location.trim(),
         new Date().getTime(),
+        type.trim(),
       ];
       const { rows, rowCount } = await dbHelper.query(text, values);
       if (!rowCount) return responseMessage(res, 404, 'This record does not exist', 'error');
